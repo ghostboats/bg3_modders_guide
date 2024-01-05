@@ -1,0 +1,18 @@
+new entry "HEAL"
+type "StatusData"
+data "StatusType" "HEAL"
+data "DisplayName" "h7437226fg8ac0g4b49gb3eeg96bb2965f2fa;1"
+data "SoundVocalStart" "AWAKE"
+data "HealStat" "Vitality"
+data "HealType" "Qualifier"
+data "HealValue" "100"
+data "StatusPropertyFlags" "BringIntoCombat;DisableOverhead;DisablePortraitIndicator"
+
+new entry "RESURRECT"
+type "StatusData"
+data "StatusType" "HEAL"
+using "HEAL"
+data "DisplayName" "hf6d39c86gd32cg4433ga52dg4058c7ea1737;1"
+data "SoundVocalStart" "NONE"
+data "StatusPropertyFlags" "DisableOverhead;DisablePortraitIndicator"
+
