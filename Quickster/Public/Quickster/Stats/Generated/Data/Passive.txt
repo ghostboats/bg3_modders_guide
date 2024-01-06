@@ -13,3 +13,13 @@ data "Description" "h5dc1bb71g31b4g4c67g9eb0ga6dfcd323191"
 data "Icon" "PassiveFeature_FightingStyle_Defense"
 data "Properties" "Highlighted"
 data "Boosts" "JumpMaxDistanceMultiplier(2)"
+
+new entry "Quickster_Zoomies"
+type "PassiveData"
+data "DisplayName" "h98458680g0b0bg4587gba79gf61b63e67e73"
+data "Description" "haa00cdd9g7e75g403eg88a4g9a49947d4e18"
+data "Icon" "PassiveFeature_JackOfAllTrades"
+data "Properties" "Highlighted"
+data "StatFunctorsContext" "OnAttack"
+data "Conditions" "IsAttack()"
+data "StatFunctors" "JumpMaxDistanceMultiplier(199)
