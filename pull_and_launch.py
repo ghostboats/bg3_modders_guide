@@ -3,6 +3,7 @@ import shutil
 import os
 import pyautogui
 import time
+import pygetwindow as gw
 #to make exe run this in the same dir as bg3_modders_guide
 #C:\Users\vishal\AppData\Roaming\Python\Python312\Scripts\pyinstaller.exe --onefile --add-data "C:\Users\vishal\Desktop\bg3_mods\*.png;bg3_mods" pull_and_launch.py
 
@@ -125,6 +126,11 @@ def launch_bg3_modders_multitool():
 
 def interact_with_game():
     time.sleep(5)
+    
+    # Activate Baldur's Gate 3 window
+    bg3_window = gw.getWindowsWithTitle('Baldur\'s Gate 3')[0]
+    bg3_window.activate()
+    
     game_menu_path = r'C:\Users\vishal\Desktop\bg3_mods\game_menu.png'
     find_image_on_screen(game_menu_path, click=1)
     new_game_path = r'C:\Users\vishal\Desktop\bg3_mods\new_game_button.png'
