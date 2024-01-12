@@ -4,6 +4,7 @@ import os
 import pyautogui
 import time
 import pygetwindow as gw
+import keyboard
 #to make exe run this in the same dir as bg3_modders_guide
 #C:\Users\vishal\AppData\Roaming\Python\Python312\Scripts\pyinstaller.exe --onefile --add-data "C:\Users\vishal\Desktop\bg3_mods\*.png;bg3_mods" pull_and_launch.py
 
@@ -148,10 +149,9 @@ def interact_with_game():
     find_image_on_screen(start_game_path, click=1)
     #accept_button_path = r'C:\Users\vishal\Desktop\bg3_mods\accept_button.png'
     time.sleep(2)
-    pyautogui.keyDown('esc')
     #find_image_on_screen(accept_button_path, click=0)
     time.sleep(8)
-    pyautogui.keyUp('esc')
+    keyboard.press_and_release('esc')
     time.sleep(3)
     #find_image_on_screen(accept_button_path, click=2)
     dont_reset_button_path = r'C:\Users\vishal\Desktop\bg3_mods\dont_reset_button.png'
