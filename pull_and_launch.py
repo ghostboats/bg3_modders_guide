@@ -177,14 +177,15 @@ def interact_with_game():
     while in_game_button is None:
         in_game_button = find_image_on_screen(in_game_path, click=0)
 
+    pyautogui.moveTo(pyautogui.size().width / 2, pyautogui.size().height / 2)
+
     while in_game_button != None:
         keyboard.press_and_release('space')
-        time.sleep(0.5)
+        time.sleep(0.3)
         try:
             in_game_button = pyautogui.locateOnScreen(in_game_path, confidence=0.8)
         except:
             in_game_button = None
-            pyautogui.moveTo(pyautogui.size().width / 2, pyautogui.size().height / 2)
 
 
 
