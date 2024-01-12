@@ -190,6 +190,7 @@ def interact_with_game():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     git_repo_path = 'C:\\Users\\vishal\\Desktop\\git repos\\bg3_modders_guide'
     if run_git_pull(git_repo_path):
         mod_file = 'Quickster.pak'
@@ -206,3 +207,7 @@ if __name__ == "__main__":
             modders_multitool_process.terminate()
         if mod_manager_process:
             mod_manager_process.terminate()
+        
+        end_time = time.time()  # Capture the end time
+        elapsed_time = end_time - start_time  # Calculate the elapsed time
+        print(f"Script completed in {elapsed_time:.2f} seconds.")
