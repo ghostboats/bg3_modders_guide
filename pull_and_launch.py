@@ -128,6 +128,25 @@ def interact_with_game():
     find_image_on_screen(game_menu_path, click=1)
     new_game_path = r'C:\Users\vishal\Desktop\bg3_mods\new_game_button.png'
     find_image_on_screen(new_game_path, click=1)
+    start_game_path = r'C:\Users\vishal\Desktop\bg3_mods\start_game_button.png'
+    find_image_on_screen(start_game_path, click=1)
+    accept_button_path = r'C:\Users\vishal\Desktop\bg3_mods\accept_button.png'
+    find_image_on_screen(accept_button_path, click=0)
+    pyautogui.press('esc')
+    find_image_on_screen(accept_button_path, click=1)
+    dont_reset_button_path = r'C:\Users\vishal\Desktop\bg3_mods\dont_reset_button.png'
+    find_image_on_screen(dont_reset_button_path, click=1)
+    class_button_path = r'C:\Users\vishal\Desktop\bg3_mods\class_button.png'
+    find_image_on_screen(class_button_path, click=1)
+    quickster_button_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_button.png'
+    find_image_on_screen(quickster_button_path, click=1)
+    class_passives_button_path = r'C:\Users\vishal\Desktop\bg3_mods\class_passives_button.png'
+    find_image_on_screen(class_passives_button_path, click=1)
+    proceed_button_path = r'C:\Users\vishal\Desktop\bg3_mods\proceed_button.png'
+    find_image_on_screen(proceed_button_path, click=1)
+    for _ in range(3):
+        pyautogui.click()
+        time.sleep(0.5)
 
 
 if __name__ == "__main__":
