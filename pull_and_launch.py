@@ -105,7 +105,7 @@ def pack_mod(folder_path, divine_path, mod_dest_path):
 
 def launch_bg3_mod_manager():
     mod_manager_path = r'C:\Users\vishal\Desktop\bg3_mods\BG3ModManager_Latest\BG3ModManager.exe'
-    subprocess.Popen([mod_manager_path])
+    mod_manager_process = subprocess.Popen([mod_manager_path])
     inactive_mods_path = r'C:\Users\vishal\Desktop\bg3_mods\inactive_mods.png'
     quickster_active_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_active.png'
     image_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_location.png'
@@ -121,17 +121,17 @@ def launch_bg3_mod_manager():
     pyautogui.hotkey('ctrl', 's')
     pyautogui.hotkey('ctrl', 'shift', 'g')  # Launch the game
 
-    return subprocess.Popen([mod_manager_path])
+    return mod_manager_process
 
 def launch_bg3_modders_multitool():
     multitool_path = r"C:\Users\vishal\Desktop\bg3_mods\bg3-modders-multitool\bg3-modders-multitool.exe"
-    subprocess.Popen([multitool_path])
+    multitool_process = subprocess.Popen([multitool_path])
 
 
     rebuild_image_path = r'C:\Users\vishal\Desktop\bg3_mods\rebuild.png'
     find_image_on_screen(rebuild_image_path, click=1)
 
-    return subprocess.Popen([multitool_path])
+    return multitool_process
 
 def interact_with_game():
     time.sleep(10)
@@ -171,7 +171,7 @@ def interact_with_game():
         time.sleep(0.5)
     time.sleep(5)
     keyboard.press_and_release('esc')
-    
+
 
 
 if __name__ == "__main__":
