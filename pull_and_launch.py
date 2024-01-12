@@ -93,38 +93,14 @@ def launch_bg3_mod_manager():
 
     find_image_on_screen(inactive_mods_path,1)
     pyautogui.typewrite('Quickster')
-    quickster_active_location=find_image_on_screen(quickster_active_path)
+    quickster_active_location=find_image_on_screen(quickster_active_path, search_time=1)
     if quickster_active_location == None:
-        find_image_on_screen(image_path)
-    max_retries = 10
-    retry_delay = 2  # seconds
-    for _ in range(max_retries):
-        try:
-            inactive_mods_location = pyautogui.locateCenterOnScreen(inactive_mods_path, confidence=0.9)
-            if inactive_mods_location is not None:
-                pyautogui.click(inactive_mods_location)
-                pyautogui.typewrite('Quickster')
-                quickster_active_location = pyautogui.locateCenterOnScreen(quickster_active_path, confidence=0.9)
-                if quickster_active_location is None:
-                    location = pyautogui.locateCenterOnScreen(image_path, confidence=0.8)
-                    if location is not None:
-                        pyautogui.click(location)
-                        pyautogui.press('enter')
-                        break  # Exit the loop if the image is found and clicked
-                    else:
-                        location = None
-                        print("Retrying to find quickster_location...")
-                else:
-                    break  # Exit the loop if the active location is found
-            else:
-                print("Retrying to find inactive_mods...")
-            time.sleep(retry_delay)
-        except Exception as e:
-            print(f"An error occurred ({type(e).__name__}): {e}")
-            time.sleep(retry_delay)
+        find_image_on_screen(image_path,1, confidence=0.99)
+        pyautogui.press('enter')
+    
 
     pyautogui.hotkey('ctrl', 's')
-    #pyautogui.hotkey('ctrl', 'shift', 'g')  # Launch the game
+    pyautogui.hotkey('ctrl', 'shift', 'g')  # Launch the game
 
 if __name__ == "__main__":
     if run_git_pull():
