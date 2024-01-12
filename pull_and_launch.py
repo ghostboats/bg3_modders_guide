@@ -171,6 +171,13 @@ def interact_with_game():
         time.sleep(0.5)
     time.sleep(5)
     keyboard.press_and_release('esc')
+    in_game_path = r'C:\Users\vishal\Desktop\bg3_mods\in_game_button.png'
+    in_game_button = None
+    while in_game_button is None:
+        in_game_button = find_image_on_screen(in_game_path, click=0)
+    keyboard.press('space')
+    time.sleep(4)
+    keyboard.release('space')
 
 
 
