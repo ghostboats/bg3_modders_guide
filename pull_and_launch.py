@@ -3,6 +3,8 @@ import shutil
 import os
 import pyautogui
 import time
+#to make exe run this in the same dir as bg3_modders_guide
+#C:\Users\vishal\AppData\Roaming\Python\Python312\Scripts\pyinstaller.exe --onefile --add-data "C:\Users\vishal\Desktop\bg3_mods\*.png;bg3_mods" pull_and_launch.py
 
 def find_image_on_screen(screenshot_path, click = 0, search_time=0, confidence=0.8):
     print("Starting function find_image_on_screen. Looking for: " + str(screenshot_path))
@@ -40,11 +42,19 @@ def find_image_on_screen(screenshot_path, click = 0, search_time=0, confidence=0
     return image_location
 
 
-def run_git_pull():
+def run_git_pull(repo_path):
+    original_dir = os.getcwd()  # Save the original directory
     try:
+        os.chdir(repo_path)  # Change to the repo directory
         subprocess.check_call(['git', 'pull'])
+        os.chdir(original_dir)  # Change back to the original directory
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
+        os.chdir(original_dir)  # Ensure we change back even if there's an error
+        return False
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        os.chdir(original_dir)  # Ensure we change back even if there's an unexpected error
         return False
     return True
 
@@ -56,15 +66,17 @@ def upload_mod_file(mod_folder, mods_dir):
 
 
 def pack_mod(folder_path, divine_path, mod_dest_path):
-    root_dir = os.path.dirname(folder_path)
     mod_name = os.path.basename(mod_dest_path)  # Assuming mod_dest_path is the mod name
     print('folder_path:' + str(folder_path))
     print('divine_path:' + str(divine_path))
     print('mod_dest_path:' + str(mod_dest_path))
     print(mod_name)
 
-    pakpath = os.path.join(root_dir, "temp", f"{mod_name}.pak")
-    mod_dir = os.path.join(root_dir, mod_dest_path)  # Corrected to point to mod folder
+    # Use the absolute path for the Quickster directory
+    quickster_path = r"C:\Users\vishal\Desktop\git repos\bg3_modders_guide\Quickster"
+    pakpath = os.path.join(quickster_path, "temp", f"{mod_name}.pak")
+    mod_dir = quickster_path  # Use the provided Quickster path
+
     print('pakpath_dir:' + str(pakpath))
     print('mod_dir:' + str(mod_dir))
 
@@ -79,14 +91,13 @@ def pack_mod(folder_path, divine_path, mod_dest_path):
         print("Error: .pak file not created.")
     
     # Clean up temp folder
-    temp_folder = os.path.join(root_dir, "temp")
+    temp_folder = os.path.join(quickster_path, "temp")
     if os.path.exists(temp_folder):
         shutil.rmtree(temp_folder)
 
 def launch_bg3_mod_manager():
     mod_manager_path = r'C:\Users\vishal\Desktop\bg3_mods\BG3ModManager_Latest\BG3ModManager.exe'
     subprocess.Popen([mod_manager_path])
-    time.sleep(5)  # Wait for the mod manager to launch
     inactive_mods_path = r'C:\Users\vishal\Desktop\bg3_mods\inactive_mods.png'
     quickster_active_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_active.png'
     image_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_location.png'
@@ -102,11 +113,31 @@ def launch_bg3_mod_manager():
     pyautogui.hotkey('ctrl', 's')
     pyautogui.hotkey('ctrl', 'shift', 'g')  # Launch the game
 
+def launch_bg3_modders_multitool():
+    multitool_path = r"C:\Users\vishal\Desktop\bg3_mods\bg3-modders-multitool\bg3-modders-multitool.exe"
+    subprocess.Popen([multitool_path])
+
+
+    rebuild_image_path = r'C:\Users\vishal\Desktop\bg3_mods\rebuild.png'
+    find_image_on_screen(rebuild_image_path, click=1)
+
+    # Additional steps if needed
+
+def interact_with_game():
+    game_menu_path = r'C:\Users\vishal\Desktop\bg3_mods\game_menu.png'
+    find_image_on_screen(game_menu_path, click=1)
+    new_game_path = r'C:\Users\vishal\Desktop\bg3_mods\new_game_button.png'
+    find_image_on_screen(new_game_path, click=1)
+
+
 if __name__ == "__main__":
-    if run_git_pull():
+    git_repo_path = 'C:\\Users\\vishal\\Desktop\\git repos\\bg3_modders_guide'
+    if run_git_pull(git_repo_path):
         mod_file = 'Quickster.pak'
         mod_folder = 'Quickster'
         local_appdata_path = os.getenv('LOCALAPPDATA')
         mods_dir = os.path.join(local_appdata_path, 'Larian Studios\\Baldur\'s Gate 3\\Mods')
         upload_mod_file(mod_folder, mods_dir)
-        launch_bg3_mod_manager()
+
+        launch_bg3_modders_multitool()  # Launch BG3 Modders Multitool
+        launch_bg3_mod_manager()  # Launch BG3 Mod Manager
