@@ -121,6 +121,8 @@ def launch_bg3_mod_manager():
     pyautogui.hotkey('ctrl', 's')
     pyautogui.hotkey('ctrl', 'shift', 'g')  # Launch the game
 
+    return subprocess.Popen([mod_manager_path])
+
 def launch_bg3_modders_multitool():
     multitool_path = r"C:\Users\vishal\Desktop\bg3_mods\bg3-modders-multitool\bg3-modders-multitool.exe"
     subprocess.Popen([multitool_path])
@@ -129,7 +131,7 @@ def launch_bg3_modders_multitool():
     rebuild_image_path = r'C:\Users\vishal\Desktop\bg3_mods\rebuild.png'
     find_image_on_screen(rebuild_image_path, click=1)
 
-    # Additional steps if needed
+    return subprocess.Popen([multitool_path])
 
 def interact_with_game():
     time.sleep(10)
@@ -167,6 +169,9 @@ def interact_with_game():
     for _ in range(3):
         pyautogui.click()
         time.sleep(0.5)
+    time.sleep(5)
+    keyboard.press_and_release('esc')
+    
 
 
 if __name__ == "__main__":
@@ -178,7 +183,11 @@ if __name__ == "__main__":
         mods_dir = os.path.join(local_appdata_path, 'Larian Studios\\Baldur\'s Gate 3\\Mods')
         upload_mod_file(mod_folder, mods_dir)
 
-        launch_bg3_modders_multitool()  # Launch BG3 Modders Multitool
+        modders_multitool_process = launch_bg3_modders_multitool()  # Launch BG3 Modders Multitool
         time.sleep(1)
-        launch_bg3_mod_manager()  # Launch BG3 Mod Manager
+        mod_manager_process = launch_bg3_mod_manager()  # Launch BG3 Mod Manager
         interact_with_game()
+        if modders_multitool_process:
+            modders_multitool_process.terminate()
+        if mod_manager_process:
+            mod_manager_process.terminate()
