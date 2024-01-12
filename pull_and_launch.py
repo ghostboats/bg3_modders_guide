@@ -144,6 +144,7 @@ def interact_with_game():
     
     game_menu_path = r'C:\Users\vishal\Desktop\bg3_mods\game_menu.png'
     find_image_on_screen(game_menu_path, click=1, confidence=0.95)
+    time.sleep(3)
     new_game_path = r'C:\Users\vishal\Desktop\bg3_mods\new_game_button.png'
     find_image_on_screen(new_game_path, click=1, confidence=0.83, instant=1.5)
     pyautogui.moveTo(1,1)
@@ -169,15 +170,21 @@ def interact_with_game():
     for _ in range(3):
         pyautogui.click()
         time.sleep(0.5)
-    time.sleep(5)
+    time.sleep(6)
     keyboard.press_and_release('esc')
     in_game_path = r'C:\Users\vishal\Desktop\bg3_mods\in_game_button.png'
     in_game_button = None
     while in_game_button is None:
         in_game_button = find_image_on_screen(in_game_path, click=0)
-    keyboard.press('space')
-    time.sleep(4)
-    keyboard.release('space')
+
+    while in_game_button != None:
+        keyboard.press_and_release('space')
+        try:
+            in_game_button = pyautogui.locateOnScreen(in_game_path, confidence=0.8)
+        except:
+            in_game_button = None
+        #in_game_button = find_image_on_screen(in_game_path, click=0, search_time=1)
+        time.sleep(0.5)
 
 
 
