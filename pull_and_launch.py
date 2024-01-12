@@ -132,6 +132,7 @@ def interact_with_game():
     find_image_on_screen(start_game_path, click=1)
     accept_button_path = r'C:\Users\vishal\Desktop\bg3_mods\accept_button.png'
     find_image_on_screen(accept_button_path, click=0)
+    time.sleep(3)
     pyautogui.press('esc')
     find_image_on_screen(accept_button_path, click=1)
     dont_reset_button_path = r'C:\Users\vishal\Desktop\bg3_mods\dont_reset_button.png'
@@ -159,5 +160,6 @@ if __name__ == "__main__":
         upload_mod_file(mod_folder, mods_dir)
 
         launch_bg3_modders_multitool()  # Launch BG3 Modders Multitool
+        time.sleep(1)
         launch_bg3_mod_manager()  # Launch BG3 Mod Manager
         interact_with_game()
