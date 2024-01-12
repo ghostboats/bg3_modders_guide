@@ -146,14 +146,14 @@ def interact_with_game():
     start_game_path = r'C:\Users\vishal\Desktop\bg3_mods\start_game_button.png'
     time.sleep(0.5)
     find_image_on_screen(start_game_path, click=1)
-    accept_button_path = r'C:\Users\vishal\Desktop\bg3_mods\accept_button.png'
+    #accept_button_path = r'C:\Users\vishal\Desktop\bg3_mods\accept_button.png'
     time.sleep(2)
     pyautogui.keyDown('esc')
-    find_image_on_screen(accept_button_path, click=0)
+    #find_image_on_screen(accept_button_path, click=0)
     time.sleep(8)
     pyautogui.keyUp('esc')
     time.sleep(3)
-    find_image_on_screen(accept_button_path, click=2)
+    #find_image_on_screen(accept_button_path, click=2)
     dont_reset_button_path = r'C:\Users\vishal\Desktop\bg3_mods\dont_reset_button.png'
     find_image_on_screen(dont_reset_button_path, click=1)
     class_button_path = r'C:\Users\vishal\Desktop\bg3_mods\class_button.png'
