@@ -124,6 +124,7 @@ def launch_bg3_modders_multitool():
     # Additional steps if needed
 
 def interact_with_game():
+    time.sleep(5)
     game_menu_path = r'C:\Users\vishal\Desktop\bg3_mods\game_menu.png'
     find_image_on_screen(game_menu_path, click=1)
     new_game_path = r'C:\Users\vishal\Desktop\bg3_mods\new_game_button.png'
