@@ -160,3 +160,4 @@ if __name__ == "__main__":
 
         launch_bg3_modders_multitool()  # Launch BG3 Modders Multitool
         launch_bg3_mod_manager()  # Launch BG3 Mod Manager
+        interact_with_game()
