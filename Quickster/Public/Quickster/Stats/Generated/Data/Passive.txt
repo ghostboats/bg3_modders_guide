@@ -16,13 +16,13 @@ data "Boosts" "JumpMaxDistanceMultiplier(2)"
 
 new entry "Quickster_Zoomies"
 type "PassiveData"
-data "DisplayName" "h98458680g0b0bg4587gba79gf61b63e67e73"
-data "Description" "haa00cdd9g7e75g403eg88a4g9a49947d4e18"
-data "Icon" "PassiveFeature_JackOfAllTrades"
+data "DisplayName" "hcf90a672g10deg4b3egad4fg9094c6ac6224;1"
+data "Description" "he37249cfg5d71g499cg82d9gc369133f2066;2"
+data "Icon" "PassiveFeature_ExtraAttack"
 data "Properties" "Highlighted"
-data "StatsFunctorContext" "OnDamaged"
-data "Conditions" "IsAttack()"
-data "StatsFunctors" "ApplyStatus(GAPING_WOUND_DAMAGE, 100, 0);ApplyStatus(PASSIVE_GAPING_WOUND_ATTACK,100,0)"
+data "StatsFunctorContext" "OnCast;OnStatusRemoved;OnStatusApplied"
+data "Conditions" "(context.HasContextFlag(StatsFunctorContext.OnCast) and ExtraAttackSpellCheck() and HasUseCosts('ActionPoint', true) and not Tagged('EXTRA_ATTACK_BLOCKED',context.Source) and not HasStatus('SLAYER_PLAYER',context.Source) and not HasStatus('SLAYER_PLAYER_10',context.Source) and TurnBased(context.Source)) or (context.HasContextFlag(StatsFunctorContext.OnStatusRemoved) and StatusId('INITIAL_ATTACK_TECHNICAL') and TurnBased()) or (context.HasContextFlag(StatsFunctorContext.OnStatusApplied) and StatusId('EXTRA_ATTACK_Q'))"
+data "StatsFunctors" "IF(context.HasContextFlag(StatsFunctorContext.OnCast)):ApplyStatus(SELF,EXTRA_ATTACK_Q,100,1);IF(context.HasContextFlag(StatsFunctorContext.OnStatusRemoved)):ApplyStatus(EXTRA_ATTACK_Q,100,1);IF(context.HasContextFlag(StatsFunctorContext.OnStatusApplied) and not HasHigherPriorityExtraAttackQueued('EXTRA_ATTACK_Q') and not HasAnyExtraAttack()):ApplyStatus(EXTRA_ATTACK, 100, 1)"
 
 
 
