@@ -5,6 +5,8 @@ import pyautogui
 import time
 import pygetwindow as gw
 import keyboard
+
+SS = r'C:\\Users\\adm-vpatel\\Desktop\\git_repos\\bg3_modders_guide\\screenshots\\'
 #to make exe run this in the same dir as bg3_modders_guide
 #C:\Users\vishal\AppData\Roaming\Python\Python312\Scripts\pyinstaller.exe --onefile --add-data "C:\Users\vishal\Desktop\bg3_mods\*.png;bg3_mods" pull_and_launch.py
 
@@ -100,21 +102,18 @@ def pack_mod(folder_path, divine_path, mod_dest_path):
 def launch_bg3_modders_multitool():
     multitool_path = r"C:\Users\vishal\Desktop\bg3_mods\bg3-modders-multitool\bg3-modders-multitool.exe"
     multitool_process = subprocess.Popen([multitool_path])
-    rebuild_image_path = r'C:\Users\vishal\Desktop\bg3_mods\rebuild.png'
+    rebuild_image_path = SS + 'rebuild.png'
     find_image_on_screen(rebuild_image_path, click=1)
     return multitool_process
 
 def launch_bg3_mod_manager():
     mod_manager_path = r'C:\Users\vishal\Desktop\bg3_mods\BG3ModManager_Latest\BG3ModManager.exe'
     mod_manager_process = subprocess.Popen([mod_manager_path])
-    inactive_mods_path = r'C:\Users\vishal\Desktop\bg3_mods\inactive_mods.png'
-    quickster_active_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_active.png'
-    image_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_location.png'
-    find_image_on_screen(inactive_mods_path,1)
+    find_image_on_screen(SS + 'inactive_mods.png',1)
     pyautogui.typewrite('Quickster')
-    quickster_active_location=find_image_on_screen(quickster_active_path, search_time=1)
+    quickster_active_location=find_image_on_screen(SS + 'quickster_active.png', search_time=1)
     if quickster_active_location == None:
-        find_image_on_screen(image_path,1, confidence=0.99)
+        find_image_on_screen(SS + 'quickster_location.png',1, confidence=0.99)
         pyautogui.press('enter')
     pyautogui.hotkey('ctrl', 's')
     pyautogui.hotkey('ctrl', 'shift', 'g')  # Launch the game
@@ -127,34 +126,25 @@ def interact_with_game():
     bg3_window.activate()
     pyautogui.click()
     pyautogui.click()
-    game_menu_path = r'C:\Users\vishal\Desktop\bg3_mods\game_menu.png'
-    find_image_on_screen(game_menu_path, click=1, confidence=0.95)
+    find_image_on_screen(SS + 'game_menu.png', click=1, confidence=0.95)
     time.sleep(3)
-    new_game_path = r'C:\Users\vishal\Desktop\bg3_mods\new_game_button.png'
-    find_image_on_screen(new_game_path, click=1, confidence=0.83, instant=1.5)
+    find_image_on_screen(SS + 'new_game_button.png', click=1, confidence=0.83, instant=1.5)
     pyautogui.moveTo(1,1)
-    start_game_path = r'C:\Users\vishal\Desktop\bg3_mods\start_game_button.png'
-    find_image_on_screen(start_game_path, click=1, instant=0.5)
+    find_image_on_screen(SS + 'start_game_button.png', click=1, instant=0.5)
     time.sleep(10)
     keyboard.press_and_release('esc')
-    dont_reset_button_path = r'C:\Users\vishal\Desktop\bg3_mods\dont_reset_button.png'
-    find_image_on_screen(dont_reset_button_path, click=1, instant=0.5)
-    class_button_path = r'C:\Users\vishal\Desktop\bg3_mods\class_button.png'
-    find_image_on_screen(class_button_path, click=1, instant=0.5)
-    quickster_button_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_button.png'
-    find_image_on_screen(quickster_button_path, click=1, instant = 0.5)
-    class_passives_button_path = r'C:\Users\vishal\Desktop\bg3_mods\class_passives_button.png'
-    find_image_on_screen(class_passives_button_path, click=1, instant = 0.5)
-    gotta_run_button_path = r'C:\Users\vishal\Desktop\bg3_mods\gotta_run_button.png'
-    find_image_on_screen(gotta_run_button_path, click=1, instant=0.5)
-    proceed_button_path = r'C:\Users\vishal\Desktop\bg3_mods\proceed_button.png'
-    find_image_on_screen(proceed_button_path, click=1, instant = 0.5)
+    find_image_on_screen(SS + 'dont_reset_button.png', click=1, instant=0.5)
+    find_image_on_screen(SS + 'class_button.png', click=1, instant=0.5)
+    find_image_on_screen(SS + 'quickster_button.png', click=1, instant = 0.5)
+    find_image_on_screen(SS + 'class_passives_button.png', click=1, instant = 0.5)
+    find_image_on_screen(SS + 'gotta_run_button.png', click=1, instant=0.5)
+    find_image_on_screen(SS + 'proceed_button.png', click=1, instant = 0.5)
     for _ in range(3):
         pyautogui.click()
         time.sleep(0.5)
     time.sleep(6)
     keyboard.press_and_release('esc')
-    in_game_path = r'C:\Users\vishal\Desktop\bg3_mods\in_game_button.png'
+    in_game_path = SS + 'in_game_button.png'
     in_game_button = None
     while in_game_button is None:
         in_game_button = find_image_on_screen(in_game_path, click=0)
