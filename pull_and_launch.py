@@ -6,7 +6,7 @@ import time
 import pygetwindow as gw
 import keyboard
 
-SS = r'C:\\Users\\adm-vpatel\\Desktop\\git_repos\\bg3_modders_guide\\screenshots\\'
+SS = r'C:\\Users\\vishal\\Desktop\\git repos\\bg3_modders_guide\\screenshots\\'
 #to make exe run this in the same dir as bg3_modders_guide
 #C:\Users\vishal\AppData\Roaming\Python\Python312\Scripts\pyinstaller.exe --onefile --add-data "C:\Users\vishal\Desktop\bg3_mods\*.png;bg3_mods" pull_and_launch.py
 
@@ -102,8 +102,7 @@ def pack_mod(folder_path, divine_path, mod_dest_path):
 def launch_bg3_modders_multitool():
     multitool_path = r"C:\Users\vishal\Desktop\bg3_mods\bg3-modders-multitool\bg3-modders-multitool.exe"
     multitool_process = subprocess.Popen([multitool_path])
-    rebuild_image_path = SS + 'rebuild.png'
-    find_image_on_screen(rebuild_image_path, click=1)
+    find_image_on_screen(SS + 'rebuild.png', click=1)
     return multitool_process
 
 def launch_bg3_mod_manager():
