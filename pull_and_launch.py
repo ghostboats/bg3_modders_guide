@@ -66,12 +66,6 @@ def run_git_pull(repo_path):
         return False
     return True
 
-def upload_mod_file(mod_folder, mods_dir):
-    if not os.path.exists(mods_dir):
-        os.makedirs(mods_dir)
-    divine_path = r"C:\Users\vishal\Desktop\bg3_mods\ExportTool-v1.18.7\Tools\divine.exe"
-    pack_mod(os.path.abspath(__file__), divine_path, mod_folder)
-
 
 def pack_mod(folder_path, divine_path, mod_dest_path):
     mod_name = os.path.basename(mod_dest_path)  # Assuming mod_dest_path is the mod name
@@ -103,45 +97,36 @@ def pack_mod(folder_path, divine_path, mod_dest_path):
     if os.path.exists(temp_folder):
         shutil.rmtree(temp_folder)
 
+def launch_bg3_modders_multitool():
+    multitool_path = r"C:\Users\vishal\Desktop\bg3_mods\bg3-modders-multitool\bg3-modders-multitool.exe"
+    multitool_process = subprocess.Popen([multitool_path])
+    rebuild_image_path = r'C:\Users\vishal\Desktop\bg3_mods\rebuild.png'
+    find_image_on_screen(rebuild_image_path, click=1)
+    return multitool_process
+
 def launch_bg3_mod_manager():
     mod_manager_path = r'C:\Users\vishal\Desktop\bg3_mods\BG3ModManager_Latest\BG3ModManager.exe'
     mod_manager_process = subprocess.Popen([mod_manager_path])
     inactive_mods_path = r'C:\Users\vishal\Desktop\bg3_mods\inactive_mods.png'
     quickster_active_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_active.png'
     image_path = r'C:\Users\vishal\Desktop\bg3_mods\quickster_location.png'
-
     find_image_on_screen(inactive_mods_path,1)
     pyautogui.typewrite('Quickster')
     quickster_active_location=find_image_on_screen(quickster_active_path, search_time=1)
     if quickster_active_location == None:
         find_image_on_screen(image_path,1, confidence=0.99)
         pyautogui.press('enter')
-    
-
     pyautogui.hotkey('ctrl', 's')
     pyautogui.hotkey('ctrl', 'shift', 'g')  # Launch the game
-
     return mod_manager_process
-
-def launch_bg3_modders_multitool():
-    multitool_path = r"C:\Users\vishal\Desktop\bg3_mods\bg3-modders-multitool\bg3-modders-multitool.exe"
-    multitool_process = subprocess.Popen([multitool_path])
-
-
-    rebuild_image_path = r'C:\Users\vishal\Desktop\bg3_mods\rebuild.png'
-    find_image_on_screen(rebuild_image_path, click=1)
-
-    return multitool_process
 
 def interact_with_game():
     time.sleep(10)
-    
     # Activate Baldur's Gate 3 window
     bg3_window = gw.getWindowsWithTitle('Baldur\'s Gate 3')[0]
     bg3_window.activate()
     pyautogui.click()
     pyautogui.click()
-    
     game_menu_path = r'C:\Users\vishal\Desktop\bg3_mods\game_menu.png'
     find_image_on_screen(game_menu_path, click=1, confidence=0.95)
     time.sleep(3)
@@ -150,11 +135,8 @@ def interact_with_game():
     pyautogui.moveTo(1,1)
     start_game_path = r'C:\Users\vishal\Desktop\bg3_mods\start_game_button.png'
     find_image_on_screen(start_game_path, click=1, instant=0.5)
-    #accept_button_path = r'C:\Users\vishal\Desktop\bg3_mods\accept_button.png'
-    #find_image_on_screen(accept_button_path, click=0)
     time.sleep(10)
     keyboard.press_and_release('esc')
-    #find_image_on_screen(accept_button_path, click=2)
     dont_reset_button_path = r'C:\Users\vishal\Desktop\bg3_mods\dont_reset_button.png'
     find_image_on_screen(dont_reset_button_path, click=1, instant=0.5)
     class_button_path = r'C:\Users\vishal\Desktop\bg3_mods\class_button.png'
@@ -193,15 +175,19 @@ def interact_with_game():
 if __name__ == "__main__":
     start_time = time.time()
     git_repo_path = 'C:\\Users\\vishal\\Desktop\\git repos\\bg3_modders_guide'
+    divine_path = r"C:\Users\vishal\Desktop\bg3_mods\ExportTool-v1.18.7\Tools\divine.exe"
     if run_git_pull(git_repo_path):
         mod_file = 'Quickster.pak'
         mod_folder = 'Quickster'
         local_appdata_path = os.getenv('LOCALAPPDATA')
         mods_dir = os.path.join(local_appdata_path, 'Larian Studios\\Baldur\'s Gate 3\\Mods')
-        upload_mod_file(mod_folder, mods_dir)
+        if not os.path.exists(mods_dir):
+            print('no dir found')
+            quit()
+        pack_mod(os.path.abspath(__file__), divine_path, mod_folder)
 
         modders_multitool_process = launch_bg3_modders_multitool()  # Launch BG3 Modders Multitool
-        time.sleep(1)
+        time.sleep(0.5)
         mod_manager_process = launch_bg3_mod_manager()  # Launch BG3 Mod Manager
         interact_with_game()
         if modders_multitool_process:
