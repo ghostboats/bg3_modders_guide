@@ -5,7 +5,7 @@ import pyautogui
 import time
 import pygetwindow as gw
 import keyboard
-
+hd2b088dcgec45g4e65g9be5g4c6f689e46c6
 SS = r'C:\\Users\\vishal\\Desktop\\git repos\\bg3_modders_guide\\screenshots\\'
 #to make exe run this in the same dir as bg3_modders_guide
 #C:\Users\vishal\AppData\Roaming\Python\Python312\Scripts\pyinstaller.exe --onefile --add-data "C:\Users\vishal\Desktop\bg3_mods\*.png;bg3_mods" pull_and_launch.py
