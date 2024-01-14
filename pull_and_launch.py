@@ -115,12 +115,11 @@ def launch_bg3_mod_manager():
         find_image_on_screen(SS + 'quickster_location.png',1, confidence=0.99)
         pyautogui.press('enter')
     pyautogui.hotkey('ctrl', 's')
-    pyautogui.hotkey('ctrl', 'shift', 'g')  # Launch the game
+    pyautogui.hotkey('ctrl', 'shift', 'g')
     return mod_manager_process
 
 def interact_with_game():
     time.sleep(10)
-    # Activate Baldur's Gate 3 window
     bg3_window = gw.getWindowsWithTitle('Baldur\'s Gate 3')[0]
     bg3_window.activate()
     pyautogui.click()
@@ -175,15 +174,15 @@ if __name__ == "__main__":
             quit()
         pack_mod(os.path.abspath(__file__), divine_path, mod_folder)
 
-        modders_multitool_process = launch_bg3_modders_multitool()  # Launch BG3 Modders Multitool
+        modders_multitool_process = launch_bg3_modders_multitool()
         time.sleep(0.5)
-        mod_manager_process = launch_bg3_mod_manager()  # Launch BG3 Mod Manager
+        mod_manager_process = launch_bg3_mod_manager()
         interact_with_game()
         if modders_multitool_process:
             modders_multitool_process.terminate()
         if mod_manager_process:
             mod_manager_process.terminate()
         
-        end_time = time.time()  # Capture the end time
-        elapsed_time = end_time - start_time  # Calculate the elapsed time
+        end_time = time.time()
+        elapsed_time = end_time - start_time
         print(f"Script completed in {elapsed_time:.2f} seconds.")
