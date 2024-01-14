@@ -71,26 +71,26 @@ def run_git_pull(repo_path):
 
 def pack_mod(folder_path, divine_path, mod_dest_path):
     mod_name = os.path.basename(mod_dest_path)  # Assuming mod_dest_path is the mod name
-    print('folder_path:' + str(folder_path))
-    print('divine_path:' + str(divine_path))
-    print('mod_dest_path:' + str(mod_dest_path))
-    print(mod_name)
+    #print('folder_path:' + str(folder_path))
+    #print('divine_path:' + str(divine_path))
+    #print('mod_dest_path:' + str(mod_dest_path))
+    #print(mod_name)
 
     # Use the absolute path for the Quickster directory
     quickster_path = r"C:\Users\vishal\Desktop\git repos\bg3_modders_guide\Quickster"
     pakpath = os.path.join(quickster_path, "temp", f"{mod_name}.pak")
     mod_dir = quickster_path  # Use the provided Quickster path
 
-    print('pakpath_dir:' + str(pakpath))
-    print('mod_dir:' + str(mod_dir))
+    #print('pakpath_dir:' + str(pakpath))
+    #print('mod_dir:' + str(mod_dir))
 
     result = subprocess.run([divine_path, "-g", "bg3", "--action", "create-package", "--source", mod_dir, "--destination", pakpath, "-l", "all"], capture_output=True, text=True)
-    print(result.stdout)
-    print(result.stderr)
+    #print(result.stdout)
+    #print(result.stderr)
 
     if os.path.exists(pakpath):
         shutil.move(pakpath, os.path.join(mods_dir, f"{mod_name}.pak"))
-        print("Mod files moved to", mods_dir)
+        #print("Mod files moved to", mods_dir)
     else:
         print("Error: .pak file not created.")
     
