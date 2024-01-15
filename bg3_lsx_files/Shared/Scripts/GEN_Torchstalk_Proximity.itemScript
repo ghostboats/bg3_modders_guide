@@ -1,0 +1,216 @@
+INIT	
+	ITEM:__Me
+	
+	EXTERN FLOAT: %WarningRadius = 5.0
+	EXTERN FLOAT: %ExplosionRadius = 3.0
+	EXTERN FLOAT: %ArmingTime = 1.0
+	EXTERN FLOAT: %ExplosionDelayTime = 0.5
+	EXTERN STRING: %GlowingFX = "VFX_Script_PUZ_Underdark_Mushroom_Exploding_A_01"
+	//EXTERN STRING: %PulsatingFX = "VFX_Script_PUZ_Underdark_Mushroom_Exploding_A_02"	
+	EXTERN SPELL:%MineProjectile = Projectile_Torchstalk_Explosion
+	
+	STRING: %WarningSound = "SFX_Mushroom_Torchstalk_Warning"
+	
+	//INT64: %PulsatingFXHandle = null
+	INT64: %GlowingFXHandle = null	
+	
+	INT: %HasCharactersInWarning = 0
+	INT: %HasCharactersInExplosion = 0
+	INT: %IsArming = 0
+	INT: %IsGlowing = 0
+	INT: %WantToExplode = 0
+	INT: %Deployed = 0
+	INT: %Exploded = 0
+	INT: %Deactivated = 0
+
+BEHAVIOUR
+
+REACTION PeaceDeployment, 101
+USAGE PEACE
+CHECK "c1"
+	IsEqual(%Deployed, 0)
+ACTIONS	
+	Set(%Deployed, 1)	
+	SetCanFight(__Me, 0)
+	StartTimer("UpdateProximityMine", 0.1, -1)
+	
+REACTION CombatDeployment, 101
+USAGE COMBAT
+ACTIONS
+	IF "c1"
+		IsEqual(%Deployed, 0)
+	THEN
+		Set(%Deployed, 1)		
+		StartTimer("UpdateProximityMine", 0.1, -1)
+		Sleep(0.1)
+		SetCanFight(__Me, 0)
+	ENDIF	
+	EndTurn(__Me)
+
+REACTION Explosion, 100
+USAGE ALL
+CHECK "c1&c2&c3&c4"
+	IsEqual(%Deployed, 1)
+	IsEqual(%WantToExplode, 1)
+	IsEqual(%Exploded, 0)
+	IsEqual(%Deactivated, 0)
+ACTIONS	
+	PlaySound(__Me,%WarningSound)
+	Sleep(%ExplosionDelayTime)	
+	CallFunction("ExplodeMyself")	
+
+EVENTS
+	
+EVENT UpdateProximity
+ON
+	OnTimer("UpdateProximityMine")	
+ACTIONS		
+	IF "c1&c2"
+		IsEqual(%Exploded, 0)
+		IsEqual(%Deactivated, 0)
+	THEN
+		// Checking explosion zone	
+		Set(%HasCharactersInExplosion, 0)		
+		IterateCharactersNear(__Me, %ExplosionRadius, "IterateExplosion")		
+		IF "c1"
+			IsEqual(%HasCharactersInExplosion, 1)
+		THEN
+			IF "c1"
+				IsEqual(%IsArming, 0)
+			THEN
+				Set(%IsArming, 1)
+				StartTimer("ArmingBeforeExplosion", %ArmingTime, -1)
+				//ItemPlayLoopEffect(%PulsatingFXHandle,__Me, %PulsatingFX)
+			ENDIF
+		ELSE
+			CallFunction("StopArming")
+		ENDIF
+		
+		// Checking warning zone
+		Set(%HasCharactersInWarning, 0)
+		IterateCharactersNear(__Me, %WarningRadius, "IterateWarning")					
+		IF "c1"//"c1&c2"
+			IsEqual(%HasCharactersInWarning, 1)
+			//IsEqual(%HasCharactersInExplosion, 0)
+		THEN
+			IF "c1"
+				IsEqual(%IsGlowing, 0)
+			THEN
+				Set(%IsGlowing, 1)
+				ItemPlayLoopEffect(%GlowingFXHandle,__Me, %GlowingFX)
+			ENDIF
+		ELSE
+			CallFunction("StopGlowing")
+		ENDIF
+	ENDIF
+
+EVENT IterateWarning
+VARS
+	CHARACTER:_Char
+ON
+	OnIterateCharacter(_Char, "IterateWarning")
+ACTIONS	
+	IF "!c1&!c2&!c3&!c4&!c5"
+		CharacterIsDead(_Char)
+		CharacterIsSummon(_Char)						
+		IsTagged(_Char, "SUMMON")
+		IsTagged(_Char, "MYCONID")
+		CharacterHasStatus(_Char, "UND_SOVEREIGNKEY")
+	THEN
+		Set(%HasCharactersInWarning, 1)		
+	ENDIF
+	
+EVENT IterateExplosion
+VARS
+	CHARACTER:_Char
+ON
+	OnIterateCharacter(_Char, "IterateExplosion")
+ACTIONS	
+	IF "!c1&!c2&!c3&!c4&!c5"
+		CharacterIsDead(_Char)
+		CharacterIsSummon(_Char)
+		IsTagged(_Char, "SUMMON")
+		IsTagged(_Char, "MYCONID")
+		CharacterHasStatus(_Char, "UND_SOVEREIGNKEY")
+	THEN
+		Set(%HasCharactersInExplosion, 1)		
+	ENDIF
+
+EVENT OnArmingTimer
+ON
+	OnTimer("ArmingBeforeExplosion")	
+ACTIONS	
+	IF "c1&c2"
+		IsEqual(%IsArming, 1)
+		IsEqual(%WantToExplode, 0)		
+	THEN
+		Set(%WantToExplode, 1)
+	ENDIF		
+
+EVENT ExplodeMyself
+VARS
+	FLOAT3:_Position
+	FLOAT:_Y
+ON
+	OnFunction("ExplodeMyself")	
+ACTIONS
+	IF "c1&c2&c3"
+		IsEqual(%Exploded, 0)		
+		GetPosition(__Me, _Position)
+		GetY(_Position, _Y)
+	THEN	
+		CallFunction("StopGlowing")
+		CallFunction("StopArming")		
+		Set(%Exploded, 1)
+		SetHealth(__Me, 0)				
+		Add(_Y, 0.5)
+		SetY(_Position, _Y)
+		ExplodeAt(_Position, %MineProjectile, 0, __Me)
+		Set(%GlowingFXHandle,null)
+		Set(%GlowingFXHandle,null)
+	ENDIF	
+
+EVENT StopArming
+ON
+	OnFunction("StopArming")
+ACTIONS
+	IF "c1"
+		IsEqual(%IsArming, 1)
+	THEN
+		StopTimer("ArmingBeforeExplosion")			
+		Set(%IsArming, 0)
+		//StopLoopEffect(%PulsatingFXHandle, 0)
+	ENDIF
+	
+EVENT StopGlowing
+ON
+	OnFunction("StopGlowing")
+ACTIONS
+	IF "c1"
+		IsEqual(%IsGlowing, 1)
+	THEN
+		StopLoopEffect(%GlowingFXHandle, 0)
+		Set(%IsGlowing, 0)
+	ENDIF
+	
+EVENT OnItemDestroying
+ON	
+	OnItemDestroying(__Me)
+ACTIONS
+	Set(%Deactivated, 1)
+	StopTimer("UpdateProximityMine")
+	CallFunction("StopGlowing")
+	CallFunction("StopArming")
+	IF "c1"
+		IsEqual(%Exploded, 0)
+	THEN
+		CallFunction("ExplodeMyself")
+	ENDIF
+	
+EVENT Shutdown
+ON
+	OnShutdown()
+ACTIONS		
+	CallFunction("StopGlowing")
+	CallFunction("StopArming")
+	StopTimer("UpdateProximityMine")

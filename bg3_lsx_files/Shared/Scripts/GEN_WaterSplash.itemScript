@@ -1,0 +1,11 @@
+INIT
+ITEM:__Me 
+
+EVENTS
+EVENT ToggleLight
+VARS
+	CHARACTER:_CharacterSource
+ON
+	OnUseItem(_CharacterSource,__Me)
+ACTIONS
+	CharacterApplyStatus(_CharacterSource,WET,INT:3,0,__Me)

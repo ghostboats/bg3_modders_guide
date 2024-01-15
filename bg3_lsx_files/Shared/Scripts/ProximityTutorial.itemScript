@@ -1,0 +1,43 @@
+INIT
+	ITEM:__Me
+	FLOAT:%TutorialTriggerRange = 10.0
+	STRING:%TutorialMessage
+EVENTS
+EVENT ProximityTutorial_Initialize
+ON
+	OnInit()
+ACTIONS
+    IF "!c1"
+		ItemIsDestroyed(__Me)
+	THEN
+		StartTimer("UpdateProximityTutorial",1.0,-1)
+	ENDIF
+
+EVENT ProximityTutorial_Shutdown
+ON
+	OnShutdown()
+	OnItemDestroying(__Me)
+ACTIONS
+	StopTimer("UpdateProximityTutorial")
+
+EVENT ProximityTutorial_Update
+ON
+	OnTimer("UpdateProximityTutorial")
+ACTIONS
+	IF "c1"
+		IsVisible(__Me)
+	THEN
+		IterateCharactersNear(__Me,%TutorialTriggerRange,"IterateProximityTutorial")
+	ENDIF
+	
+EVENT ProximityTutorial_Iterate
+VARS
+CHARACTER:_Char
+ON
+	OnIterateCharacter(_Char,"IterateProximityTutorial")
+ACTIONS
+	IF "c1"
+		CharacterIsPartyMember(_Char,0)
+	THEN
+		CharacterItemEvent(_Char,__Me,"LaunchTutorialMessage")
+	ENDIF

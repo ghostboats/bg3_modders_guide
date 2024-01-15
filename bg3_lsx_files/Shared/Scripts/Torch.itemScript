@@ -1,0 +1,148 @@
+#INCLUDE BurningItem
+
+INIT
+	USING BurningItem
+
+	ITEM:__Me
+	EXTERN INT:%StartLit = 0
+	INT:%IsStatusOn
+	EXTERN STRING:%LightSourceOnSound = "DEC_Interactive_Lightsources_Torch_Small_On"
+	EXTERN STRING:%LightSourceOffSound = "DEC_Interactive_Lightsources_Torch_Small_Off"
+	
+	EXTERN INT:%AllowUserInteraction = 1
+
+EVENTS
+EVENT offEvent
+ON
+	OnItemEvent(__Me,"turnOff")
+ACTIONS
+	SetVar(__Me,"IsStatusOn",INT:0)
+	IF "c1"
+		ItemHasStatus(__Me,BURNING)
+	THEN
+		ItemRemoveStatus(__Me,BURNING)
+	ENDIF
+
+EVENT onEvent
+ON
+	OnItemEvent(__Me,"turnOn")
+ACTIONS
+	SetVar(__Me,"IsStatusOn",INT:1)
+	ItemApplyStatus(__Me,BURNING)
+
+EVENT InitTorch
+ON
+	OnInit()
+ACTIONS
+	SetStatusVisualEnabled(__Me,"BURNING",INT:0)
+	IF "c1&!c2"
+		IsEqual(%StartLit,1)
+		ItemHasStatus(__Me,BURNING)
+	THEN
+		ItemApplyStatus(__Me,BURNING)
+		Set(%StartLit,0)
+		IF "c1"
+			GetVar(%IsStatusOn,__Me,"IsStatusOn")
+		THEN
+			SetVar(__Me,"IsStatusOn",INT:1)
+		ENDIF
+	ELSE
+		IF "c1&!c2"
+			GetVar(%IsStatusOn,__Me,"IsStatusOn")
+			ItemHasStatus(__Me,BURNING)
+		THEN
+			SetVar(__Me,"IsStatusOn",INT:0)
+		ENDIF
+	ENDIF
+
+EVENT Shutdown
+ON
+	OnShutdown()
+ACTIONS
+	ItemRemoveStatus(__Me,BURNING)
+
+EVENT ToggleLight
+ON
+	OnUseItem(_,__Me)
+ACTIONS
+IF "!c1&c2"
+	ItemIsInInventory(__Me)
+	IsEqual(%AllowUserInteraction,1)
+THEN
+	IF "!c1" 
+		ItemHasStatus(__Me,BURNING)
+	THEN
+		ItemApplyStatus(__Me,BURNING)
+		IF "c1"
+			GetVar(%IsStatusOn,__Me,"IsStatusOn")
+		THEN
+			SetVar(__Me,"IsStatusOn",INT:1)
+		ENDIF
+	ELSE
+		ItemRemoveStatus(__Me,BURNING)
+		IF "c1"
+			GetVar(%IsStatusOn,__Me,"IsStatusOn")
+		THEN
+			SetVar(__Me,"IsStatusOn",INT:0)
+		ENDIF
+	ENDIF
+ENDIF
+
+EVENT LightOnFire
+ON
+	OnDamage(Fire,_,_,_)
+ACTIONS
+	IF "!c1"
+		ItemHasStatus(__Me,BURNING)
+	THEN
+		ItemApplyStatus(__Me,BURNING)
+		IF "c1"
+			GetVar(%IsStatusOn,__Me,"IsStatusOn")
+		THEN
+			SetVar(__Me,"IsStatusOn",INT:1)
+		ENDIF
+	ENDIF
+	
+EVENT LightOnRadiant
+ON
+	OnDamage(Radiant,_,_,_)
+ACTIONS
+	IF "!c1"
+		ItemHasStatus(__Me,BURNING)
+	THEN
+		ItemApplyStatus(__Me,BURNING)
+		IF "c1"
+			GetVar(%IsStatusOn,__Me,"IsStatusOn")
+		THEN
+			SetVar(__Me,"IsStatusOn",INT:1)
+		ENDIF
+	ENDIF
+	
+
+EVENT Extinguish
+ON
+	OnItemStatusRemoved(__Me,BURNING)
+ACTIONS
+	IF "c1"
+		GetVar(%IsStatusOn,__Me,"IsStatusOn")
+	THEN
+		SetVar(__Me,"IsStatusOn",INT:0)
+		PlaySound(__Me,%LightSourceOffSound)
+	ENDIF
+
+EVENT Light
+ON
+	OnItemStatus(__Me,BURNING)
+ACTIONS
+	IF "c1"
+		GetVar(%IsStatusOn,__Me,"IsStatusOn")
+	THEN
+		SetVar(__Me,"IsStatusOn",INT:1)
+		PlaySound(__Me,%LightSourceOnSound)
+	ENDIF
+
+EVENT Pickup
+ON
+	OnPickupItem(_,__Me)
+ACTIONS
+	ItemRemoveStatus(__Me,BURNING)

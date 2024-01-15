@@ -1,0 +1,26 @@
+INIT
+	ITEM:__Me
+	EXTERN ITEM:%ConnectedTeleporter=null
+	INT:%Revealed=0
+EVENTS
+
+EVENT ItemOnUse
+ON
+	OnUseItem(_,__Me)
+ACTIONS
+	IF "c1"
+		IsEqual(%Revealed,0)
+	THEN
+		Set(%Revealed,1)
+		ItemEvent(%ConnectedTeleporter,"RevealFromStory")
+	ENDIF
+	
+EVENT ConnectedItemOnUse
+ON
+	OnUseItem(_,%ConnectedTeleporter)
+ACTIONS
+	IF "c1"
+		IsEqual(%Revealed,0)
+	THEN
+		Set(%Revealed,1)
+	ENDIF

@@ -1,0 +1,152 @@
+INIT	
+	ITEM:__Me	
+					
+	EXTERN FLOAT:%resetDuration = 6.0
+	INT:%ProducedSpores = 0
+	
+	EXTERN FLOAT:%SurfaceRadius = 4.0	
+	EXTERN FLOAT:%Radius = 3.0
+	EXTERN FLOAT:%ExplosionDelayTime = 0.1	
+	EXTERN INT:%SurfaceDurationInTurns = 1
+	
+	INT:%Deployed = 0
+	INT:%Warning = 0	
+	INT:%Deactivated = 0
+	INT:%DropBlocked = 0
+	
+	EXTERN INT:%CanDropSporesItem = 1
+		
+	EXTERN SURFACE: %Surface = SurfaceSporeBlackCloud
+	EXTERN STRING: %CreatingSporesVFX = "VFX_Script_Stub_OverlayMaterial_01"
+	
+
+EVENTS
+
+EVENT Shutdown
+ON
+	OnShutdown()
+ACTIONS			
+	StopTimer("UpdateProximityMine")
+	
+EVENT OnDamaged
+VARS
+	DAMAGE:_DamageType
+	INT:_Amount
+ON
+	OnDamage(_DamageType, _Amount, _, __Me)
+ACTIONS
+	IF "c1|c2|c3|c4|c5|c6|c7"
+		IsEqual(_DamageType, Fire)
+		IsEqual(_DamageType, Cold)
+		IsEqual(_DamageType, Lightning)
+		IsEqual(_DamageType, Necrotic)
+		IsEqual(_DamageType, Poison)
+		IsEqual(_DamageType, Acid)
+		IsEqual(_DamageType, Radiant)
+	THEN
+		Set(%DropBlocked, 1)
+	ELSE
+		Set(%DropBlocked, 0)
+	ENDIF
+	
+EVENT OnItemDestroying
+ON	
+	OnItemDestroying(__Me)
+ACTIONS	
+	Set(%Deactivated, 1)
+	StopTimer("UpdateProximityMine")	
+	ItemEvent(__Me, "ProduceSpores")
+	
+EVENT Reset
+ON
+	OnTimer("Reset")
+ACTIONS	
+	Set(%ProducedSpores, 0)	
+	Set(%Warning, 0)	
+	
+EVENT Iterate
+VARS
+CHARACTER:_Char
+ON
+	OnIterateCharacter(_Char, "IterateProximity")
+ACTIONS		
+	IF "!c1&c2&!c3&!c4&!c5&!c6"
+		CharacterIsDead(_Char)
+		IsEqual(%Warning,0)
+		CharacterIsSummon(_Char)
+		IsTagged(_Char, "SUMMON")
+		IsTagged(_Char, "MYCONID")
+		CharacterHasStatus(_Char, "UND_SOVEREIGNKEY")
+	THEN
+		Set(%Warning,1)
+	ENDIF
+	
+EVENT ProduceSpores
+ON
+	OnItemEvent(__Me, "ProduceSpores")	
+ACTIONS
+	IF "c1"
+		IsEqual(%ProducedSpores, 0)
+	THEN				
+		Set(%ProducedSpores, 1)
+		StartTimer("Reset", %resetDuration, 0)
+	ENDIF	
+	PlayEffectAt(__Me, %CreatingSporesVFX)
+	CreateSurfaceAt(__Me, %Surface, %SurfaceRadius, %SurfaceDurationInTurns)
+	IF "c1&c2&!c3"
+		IsEqual(%CanDropSporesItem, 1)
+		IsEqual(%DropBlocked, 0)		
+		ItemHasStatus(__Me, BURNING)	
+	THEN
+		ItemEvent(__Me, "UND_ConfusionMushrooms_Event_DropSpores")
+	ENDIF	
+
+EVENT Update
+ON
+	OnTimer("UpdateProximityMine")
+ACTIONS
+	IF "c1&c2"
+		IsEqual(%ProducedSpores, 0)
+		IsEqual(%Deactivated, 0)
+	THEN
+		IF "!c1"
+			ContainsSurface(__Me, 1.0, %Surface)
+		THEN		
+			IterateCharactersNear(__Me, %Radius, "IterateProximity")	
+		ENDIF
+	ENDIF	
+	
+BEHAVIOUR
+
+REACTION PeaceDeployment, 101
+USAGE PEACE
+CHECK "c1"
+	IsEqual(%Deployed, 0)
+ACTIONS	
+	Set(%Deployed, 1)	
+	SetCanFight(__Me, 0)
+	StartTimer("UpdateProximityMine", 0.1, -1)
+	
+BEHAVIOUR
+REACTION CombatDeployment, 101
+USAGE COMBAT
+ACTIONS
+	IF "c1"
+		IsEqual(%Deployed, 0)
+	THEN
+		Set(%Deployed, 1)		
+		StartTimer("UpdateProximityMine", 0.1, -1)
+		Sleep(0.1)
+		SetCanFight(__Me, 0)
+	ENDIF	
+	EndTurn(__Me)
+	
+REACTION Warning, 100
+USAGE ALL
+CHECK "c1&c2&c3"
+	IsEqual(%Deployed, 1)
+	IsEqual(%Warning, 1)
+	IsEqual(%ProducedSpores, 0)
+ACTIONS	
+	Sleep(%ExplosionDelayTime)	
+	ItemEvent(__Me, "ProduceSpores")

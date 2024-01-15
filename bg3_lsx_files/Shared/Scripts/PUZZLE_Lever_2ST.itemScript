@@ -1,0 +1,90 @@
+INIT
+ITEM:__Me
+EXTERN STRING:%Event0=null
+EXTERN STRING:%Event1=null
+EXTERN FIXEDSTRING:%CommentAD=null
+EXTERN INT:%CurrentState = 0
+EXTERN INT:%SuspendReactivate = 0
+INT:%WantedState = -1
+CHARACTER:%UsedBy = null
+
+EVENTS	
+EVENT InitState
+ON
+	OnInit()
+ACTIONS
+	IF "c1"
+		IsEqual(%WantedState,-1)
+	THEN
+		Set(%WantedState,%CurrentState)
+	ENDIF
+
+EVENT ButtonUse
+VARS
+CHARACTER:_Char
+ON
+	OnUseItem(_Char,__Me)
+	OnCharacterItemEvent(_Char, __Me, "GLO_HitByAttack")
+ACTIONS
+	IF "c1&!c2"
+		IsEqual(%CurrentState,%WantedState)
+		ItemIsLocked(__Me)
+	THEN
+		IF "c1"
+			IsEqual(%CurrentState,0)
+		THEN
+			Set(%WantedState,1)
+		ELSE
+			Set(%WantedState,0)
+		ENDIF
+		Set(%UsedBy,_Char)
+	ENDIF
+
+EVENT Reactivate
+ON
+	OnFunction("Reactivate")
+ACTIONS
+	IF "c1"
+		IsEqual(%SuspendReactivate, 0)
+	THEN
+		ItemSetCanInteract(__Me,1)
+	ENDIF
+
+
+BEHAVIOUR
+REACTION StateChange,10
+USAGE ALL
+CHECK "!c1"
+	IsEqual(%CurrentState,%WantedState)
+ACTIONS
+	ItemSetCanInteract(__Me,0)
+	IF "c1"
+		IsEqual(%WantedState,0)
+	THEN		
+		ItemPlayAnimation(OBJ_Close_Unused_01_a7078367-8eed-4ba7-a436-196774f68a60)
+		ItemPlayEffect(__Me, "VFX_Script_Generic_Lever_01")
+		IF "!c1"
+			IsEqual(%Event0, null)
+		THEN
+			CharacterItemEvent(%UsedBy,__Me,%Event0)
+			ItemEvent(__Me,%Event0)
+		ENDIF
+	ELSE		
+		ItemPlayAnimation(OBJ_Open_Unused_01_1c8ad609-f780-418e-9fdf-c52f6d749c9f)
+		ItemPlayEffect(__Me, "VFX_Script_Generic_Lever_01")
+		IF "!c1"
+			IsEqual(%Event1, null)
+		THEN
+			CharacterItemEvent(%UsedBy,__Me,%Event1)
+			ItemEvent(__Me,%Event1)
+		ENDIF
+	ENDIF
+	IF "!c1"
+		IsEqual(%CommentAD, null)
+	THEN
+		DialogStart(_,%CommentAD,%UsedBy)
+		Set(%CommentAD,null)
+	ENDIF
+	CallFunction("Reactivate")
+	Set(%UsedBy,null)
+	Set(%CurrentState,%WantedState)

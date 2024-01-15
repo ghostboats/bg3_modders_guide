@@ -1,0 +1,74 @@
+INIT
+ITEM:__Me
+EXTERN STRING:%EventOn=null
+EXTERN STRING:%EventOff=null
+EXTERN STRING:%CommentAD=null
+EXTERN INT:%CurrentState = 0
+INT:%WantedState = -1
+CHARACTER:%UsedBy = null
+
+EVENTS
+EVENT InitState
+ON
+	OnInit()
+ACTIONS
+	IF "c1"
+		IsEqual(%WantedState,-1)
+	THEN
+		Set(%WantedState,%CurrentState)
+	ENDIF
+
+EVENT ButtonUse
+VARS
+CHARACTER:_Char
+ON
+	OnUseItem(_Char,__Me)
+	OnCharacterItemEvent(_Char, __Me, "GLO_HitByAttack")
+ACTIONS
+	IF "c1&!c2"
+		IsEqual(%CurrentState,%WantedState)
+		ItemIsLocked(__Me)
+	THEN
+		IF "c1"
+			IsEqual(%CurrentState,0)
+		THEN
+			Set(%WantedState,1)
+		ELSE
+			Set(%WantedState,0)
+		ENDIF
+		Set(%UsedBy,_Char)
+	ENDIF
+
+
+BEHAVIOUR
+REACTION StateChange,10
+USAGE ALL
+CHECK "!c1"
+	IsEqual(%CurrentState,%WantedState)
+ACTIONS
+	ItemSetCanInteract(__Me,0)
+	IF "c1"
+		IsEqual(%WantedState,0)
+	THEN				
+		//ItemPlayAnimation("Off")
+		ItemPlayEffect(__Me, "RS3_FX_GP_Combat_CameraShake_B")
+		IF "!c1"
+			IsEqual(%EventOff, null)
+		THEN
+			ItemEvent(__Me,%EventOff)
+			CharacterItemEvent(%UsedBy,__Me,%EventOff)
+		ENDIF
+	ELSE			
+		//ItemPlayAnimation("On")
+		ItemPlayEffect(__Me, "RS3_FX_GP_Combat_CameraShake_B")
+		IF "!c1"
+			IsEqual(%EventOn,null)
+		THEN
+			ItemEvent(__Me,%EventOn)
+			CharacterItemEvent(%UsedBy,__Me,%EventOn)
+		ENDIF
+	ENDIF
+	ItemSetCanInteract(__Me,1)
+	Set(%UsedBy,null)		
+	Set(%CurrentState,%WantedState)
+	ItemEvent(__Me,"StateChanged")

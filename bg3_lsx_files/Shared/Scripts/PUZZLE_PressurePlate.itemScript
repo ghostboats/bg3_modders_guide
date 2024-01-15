@@ -1,0 +1,167 @@
+#INCLUDE PressurePlate
+
+INIT
+USING PressurePlate
+ITEM:__Me
+INT:%Armed=1
+EXTERN INT:%Bool_DisplayClickText=1
+EXTERN INT:%Bool_PlaySound=1
+EXTERN FIXEDSTRING:%String_ClickText="GLO_AD_MechanicalClick_fc8d3dc5-b947-6354-3aa9-d1f02fd51af4"
+EXTERN STRING:%EventOn=null
+EXTERN STRING:%EventOff=null
+CHARACTER:%Player=null
+EVENTS
+EVENT Check_If_ThePlayerIsOn
+VARS
+CHARACTER:_Char
+ON
+	OnIterateCharacter(_Char,"PressurePlateCheck")
+ACTIONS
+	IF "!c1&!c2&!c3&c4"
+		IsEqual(_Char,null)
+		CharacterIsIgnoringGroundSurface(_Char)
+		CharacterIsDead(_Char)
+		CharacterIsPlayer(_Char)
+	THEN		
+		Set(%Player,_Char)
+	ENDIF
+	
+EVENT PlateChange
+ON
+	OnItemEvent(__Me,"PressurePlateChange")
+ACTIONS
+	IF "c1&c2&!c3"
+		IsEqual(%Armed, 1)
+		IsEqual(%CurrentPercentage,1)
+		IsEqual(%EventOn,null)
+		
+	THEN
+		IF "c1"
+			IsEqual(%Bool_PlaySound,1)
+		THEN
+			PlaySound(__Me,"II_Pressure_Plate")
+		ENDIF
+		
+		IF "!c1"
+			IsEqual(%Player,null)
+		THEN
+			CharacterItemEvent(%Player,__Me,%EventOn)
+			Set(%Player,null)
+		ELSE
+			CharacterItemEvent(null,__Me,%EventOn)
+		ENDIF
+		
+		ItemPlayEffect(__Me, "RS3_FX_GP_Combat_CameraShake_B")
+		IF "c1"
+			IsEqual(%Bool_DisplayClickText,1)
+		THEN
+			DialogStart(_,%String_ClickText,__Me)
+		ENDIF
+	ELIF "c1&c2&!c3"
+		IsEqual(%Armed, 1)
+		IsEqual(%PreviousPercentage,1)
+		IsEqual(%EventOff,null)
+	THEN
+		IF "c1"
+			IsEqual(%Bool_PlaySound,1)
+		THEN
+			PlaySound(__Me,"II_Pressure_Plate_Out")
+		ENDIF
+			IF "!c1"
+			IsEqual(%Player,null)
+			THEN
+				CharacterItemEvent(%Player,__Me,%EventOff)
+				Set(%Player,null)
+			ELSE
+				CharacterItemEvent(null,__Me,%EventOff)
+			ENDIF
+		ItemPlayEffect(__Me, "RS3_FX_GP_Combat_CameraShake_B")
+	ELIF "c1&c2&!c3"
+		IsEqual(%PreviousPercentage,1)
+		IsEqual(%Bool_PlaySound,1)
+		IsEqual(%EventOn,null)
+	THEN
+		PlaySound(__Me,"II_Pressure_Plate_Out")
+	ENDIF
+	// Start Reaction to change animation
+	Interrupt(PercentageChance)
+	SetPriority(PercentageChance,100)
+
+EVENT FailedDisarm
+VARS
+	CHARACTER:_Character
+ON
+	OnItemDisarmEvent(__Me, _Character, _, 0)
+ACTIONS
+	CharacterItemEvent(_Character,__Me,%EventOn)
+	
+EVENT SuccessfulDisarm
+VARS
+	CHARACTER:_Character
+ON
+	OnItemDisarmEvent(__Me, _Character, _, 1)
+ACTIONS
+	Set(%Armed, 0)
+
+BEHAVIOUR
+
+REACTION PercentageChance,0
+VARS
+	FLOAT:_AnimationPercentage=0.0
+USAGE ALL
+ACTIONS
+		Set(_AnimationPercentage,%CurrentPercentage)
+		Divide(_AnimationPercentage,2)
+		//ItemPlayAnimationTo("PressurePlate",_AnimationPercentage,5)
+	IF "c1"
+		IsEqual(%CurrentPercentage, FLOAT:0.0)
+	THEN
+		//DebugText(__Me, "0%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.05)
+	THEN
+		//DebugText(__Me, "1%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.1)
+	THEN
+		//DebugText(__Me, "10%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.15)
+	THEN
+		//DebugText(__Me, "20%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.2)
+	THEN
+		//DebugText(__Me, "30%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.25)
+	THEN
+		//DebugText(__Me, "40%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.3)
+	THEN
+		//DebugText(__Me, "50%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.35)
+	THEN
+		//DebugText(__Me, "60%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.4)
+	THEN
+		//DebugText(__Me, "70%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.45)
+	THEN
+		//DebugText(__Me, "80%")
+	ELIF "c1"
+		IsLessThen(%CurrentPercentage, FLOAT:0.5)
+	THEN
+		//DebugText(__Me, "90%")
+	ELSE
+		//DebugText(__Me, "100%")
+	ENDIF
+	SetPriority(PercentageChance,0)
+INTERRUPT
+ACTIONS
+	Reset()
+

@@ -1,0 +1,57 @@
+#INCLUDE Mine
+#INCLUDE Generic/PUZZLE_Disarm
+/*
+* PUZZLE_Mine.itemScript #includes Mine.itemScript
+* Fires "Mine" event if total weight of objects on it exceeds %MaxWeight.
+* On "Mine" event or on any non-zero damage calls ExplodeAt with %MineProjectile projectile and %MineLevel caster level.
+*/
+
+INIT
+	USING Mine
+	USING Generic/PUZZLE_Disarm
+	ITEM:__Me
+	EXTERN SPELL:%MineProjectile=Projectile_Fireball_Trap
+
+EVENTS
+
+EVENT PlateChange
+ON
+	OnItemEvent(__Me,"MineChange")
+ACTIONS
+	IF "c1"
+		IsEqual(%CurrentPercentage,1)
+	THEN
+		ItemEvent(__Me,"Mine")
+	ENDIF
+	
+// When changing this event please apply them on the FetchSpellOnDamage event as well
+EVENT MineEvent
+VARS
+	CHARACTER:_Character
+	ITEM:_Item
+	INT:_DamagePercentage
+ON
+	OnItemEvent(__Me,"Mine")
+	OnDamage(_,_DamagePercentage,_Character,_Item)
+	OnItemDisarmEvent(__Me, _, _, 0)
+ACTIONS
+	IF "(c1&c2)|!c3"
+		IsEqual(_Character,null)
+		IsEqual(_Item,null)
+		IsEqual(_DamagePercentage,0)
+	THEN
+		IF "c1"
+			IsEqual(_Character,null)
+		THEN
+			ExplodeAt(__Me,%MineProjectile,0,__Me)
+		ELSE
+			ExplodeAt(__Me,%MineProjectile,0,_Character)
+		ENDIF
+				ItemDie(__Me,1)
+	ENDIF
+
+EVENT FetchSpellOnDamage
+ON
+	FetchItemSpellOnDamage(_,_)
+ACTIONS
+	RETURN(1,%MineProjectile,0)

@@ -1,0 +1,23 @@
+INIT
+ITEM:__Me
+
+
+BEHAVIOUR
+REACTION Destroy_onSurfuse_orDamage,1001
+USAGE ALL
+CHECK "c1"
+	 IsInSurface(__Me,SurfaceFire)
+ACTIONS
+	PlayEffectAt(__Me,"VFX_Spells_Cast_Fire_FireBolt_Cast_Root_01")//"RS3_FX_GP_ScriptedEvent_Smoke_01")
+	Transform(__Me,ITEMTEMPLATE:DCL_GEN_BurnSpot_A_NOTAPPROVED_0b08a0a6-a5f6-4897-9c17-ddca0d887f67,"VFX_Environment_Wreck_Smoke_Interior_Cave_01")//"RS3_FX_Char_ElementalDevil_Fire_A_02")
+
+	
+REACTION Destroy_onStatus,1001
+USAGE ALL
+CHECK "c1"
+	  ItemHasStatus(__Me,BURNING)
+ACTIONS
+	PlayEffectAt(__Me,"VFX_Spells_Cast_Fire_FireBolt_Cast_Root_01")//"RS3_FX_GP_ScriptedEvent_Smoke_01")
+	Transform(__Me,ITEMTEMPLATE:DCL_GEN_BurnSpot_A_NOTAPPROVED_0b08a0a6-a5f6-4897-9c17-ddca0d887f67,"VFX_Environment_Wreck_Smoke_Interior_Cave_01")//"RS3_FX_Char_ElementalDevil_Fire_A_02")
+
+	

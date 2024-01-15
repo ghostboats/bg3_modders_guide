@@ -1,0 +1,244 @@
+INIT
+	ITEM:__Me
+	INT:%CurrentIsVisible=0
+	INT:%NewIsVisible=0
+	INT:%TimerStopped=0
+	EXTERN FLOAT:%HighlightTimer = 18
+	EXTERN INT:%IsInvestigation = 0
+	EXTERN FLOAT:%MinDistance=3
+	EXTERN STRING:%AppearEffect = "VFX_Script_Perception_Default_01"
+	EXTERN STRING:%AppearEffectTrap = "VFX_Script_Perception_Danger_01"
+	EXTERN INT:%InteractFromStart = 0
+	EXTERN INT:%DC = 10
+	INT64:%EffectHandle = null
+	EXTERN TRIGGER:%RevealOnlyInTrigger = null
+	LIST<CHARACTER>: %CheckedCharacters
+	CHARACTER: %CheckAdvantage_Character = null
+	INT: %CheckAdvantage_Result = 0
+// Same as hidden perception but for interactability, mostly used to draw attention to something in a scene rather 
+// than actually being a puzzle
+
+EVENTS
+
+EVENT InitializeHidden
+ON
+	OnInit()
+ACTIONS
+	IF "c1"
+		IsEqual(%CurrentIsVisible,0)
+	THEN
+		StartTimer("UpdateHidden",0.2,-1)
+	ENDIF
+
+	IF "c1"
+		IsEqual(%InteractFromStart,0)
+	THEN
+		ItemSetCanInteract(__Me,%CurrentIsVisible)
+	ENDIF
+
+EVENT ShutdownHidden
+ON
+	OnShutdown()
+	OnItemDestroying(__Me)
+ACTIONS
+	StopTimer("UpdateHidden")
+
+EVENT UpdateHidden
+ON
+	OnTimer("UpdateHidden")
+ACTIONS
+	Set(%NewIsVisible,0)
+	IterateParty("HiddenObjectCheck")
+	IF "!c1&c2&c3"
+		IsEqual(%CurrentIsVisible,%NewIsVisible)
+		IsEqual(%TimerStopped,0)
+		IsEqual(%InteractFromStart,0)
+	THEN
+		Set(%CurrentIsVisible,%NewIsVisible)
+		ItemSetCanInteract(__Me,%CurrentIsVisible)
+	ELIF "!c1&c2&!c3"
+		IsEqual(%CurrentIsVisible,%NewIsVisible)
+		IsEqual(%TimerStopped,0)
+		IsEqual(%InteractFromStart,0)
+	THEN
+		Set(%CurrentIsVisible,%NewIsVisible)
+	ENDIF
+	
+	IF "c1"
+		IsEqual(%CurrentIsVisible,1)
+	THEN
+		StopTimer("UpdateHidden")
+	ENDIF
+
+EVENT CheckHidden
+VARS
+	CHARACTER:_Char
+	FLOAT:    _Dist
+	STRING:   _Event
+	INT:      _AllowEvent
+	INT:      _CharCount
+	INT:      _CharSize
+	CHARACTER:_CheckedChar
+	STRING:   _Skill
+	INT:      _DCadjusted
+ON
+	OnIterateCharacter(_Char,"HiddenObjectCheck")
+ACTIONS
+	IF "c1&!c2&c3&!c4&(c5|c6)&c7&c8&c9" 
+		IsEqual(%NewIsVisible,0)				//c1
+		CharacterIsDead(_Char)					//c2
+		IsEqual(%TimerStopped,0)				//c3
+		IsInDialog(_Char, 1)					//c4
+		IsEqual(%RevealOnlyInTrigger,null)		//c5
+		CharacterIsInTrigger(_Char,%RevealOnlyInTrigger)	//c6
+		GetDistance(_Dist,_Char,__Me)			//c7
+		IsLessThen(_Dist,%MinDistance)			//c8
+		CharacterIsPlayer(_Char)				//c9
+	THEN
+		Set(_AllowEvent, 1)
+		// Checking if we already rolled for that character
+		Set(_CharCount, 0)	
+		IF "c1"
+			ListGetSize(%CheckedCharacters,_CharSize)
+		THEN
+			WHILE "c1&!c2"
+				IsLessThen(_CharCount,_CharSize)	
+				IsEqual(_AllowEvent, 0)
+			DO
+				Add(_CharCount, 1)
+				IF "c1&c2"
+					ListGet(%CheckedCharacters, _CharCount, _CheckedChar)
+					IsEqual(_CheckedChar, _Char)
+				THEN						
+					Set(_AllowEvent,0)
+				ENDIF					
+			ENDWHILE
+			IF "c1"
+				IsEqual(_AllowEvent, 1)
+			THEN
+				ListAdd(%CheckedCharacters, _Char)
+			ENDIF
+		ENDIF
+		
+		IF "c1"
+			IsEqual(_AllowEvent, 1)
+		THEN
+			SetVar(__Me,"CheckAdvantage_Character",_Char)
+			SetVar(__Me,"CheckAdvantage_Result",INT:0)
+			CallFunction("PUZZLE_HiddenPerception_CheckAdvantage")
+			//DebugText(__Me,"Advantage: [1]",%CheckAdvantage_Result)
+			
+			Set(_Skill, "Perception")
+			Set(_Event, "GLO_HiddenItemCheck")
+			IF "c1"
+				IsEqual(%IsInvestigation, 1)
+			THEN
+				Set(_Skill, "Investigation")
+				Set(_Event, "GLO_HiddenInvestigationItemCheck")
+			ENDIF
+			
+			Set(_DCadjusted,%DC)
+			IF "c1"
+				IsEqual(%CheckAdvantage_Result,-2)
+			THEN
+				Set(_DCadjusted,50)
+				Set(%CheckAdvantage_Result,0)
+			ELIF "c1"
+				IsEqual(%CheckAdvantage_Result,2)
+			THEN
+				Set(_DCadjusted,0)
+				Set(%CheckAdvantage_Result,0)
+			ENDIF
+			//DebugText(__Me,"DCadjusted: [1]",_DCadjusted)
+			//DebugText(__Me,"Advantage: [1]",%CheckAdvantage_Result)
+			
+			RequestPassiveRoll(_Char,__Me,"SkillCheck",_Skill,_DCadjusted,%CheckAdvantage_Result,_Event)
+		ENDIF
+	ENDIF
+	
+EVENT StoryReveal
+ON
+	OnItemEvent(__Me,"StoryReveal")
+ACTIONS
+	Set(%TimerStopped,1)
+	StopTimer("UpdateHidden")
+	ItemSetCanInteract(__Me,1)
+	StartTimer("StopLoopingEffect",%HighlightTimer,1)
+	IF "c1&(c2|c3)"
+		IsEqual(%EffectHandle,null)
+		IsEqual(%CurrentIsVisible,0)
+		IsEqual(%NewIsVisible,0)
+	THEN
+		IF "c1"
+			ItemIsTrap(__Me)
+		THEN
+			ItemPlayLoopEffect(%EffectHandle,__Me, %AppearEffectTrap)
+		ELSE
+			ItemPlayLoopEffect(%EffectHandle,__Me, %AppearEffect)
+		ENDIF
+	ENDIF
+	Set(%CurrentIsVisible,1)
+	Set(%NewIsVisible,1)
+
+EVENT StoryCancel
+ON
+	OnItemEvent(__Me,"StoryCancel")
+ACTIONS
+	DebugText(__Me, "Cancel me")
+    SetVar(__Me, "TimerStopped", INT:1)
+    StopTimer("UpdateHidden")
+	StartTimer("StopLoopingEffect", 0.0, 0)
+
+EVENT StopLoopingEffectTimer
+ON
+	OnTimer("StopLoopingEffect")
+ACTIONS
+	IF "!c1"
+		IsEqual(%EffectHandle,null)
+	THEN
+		StopLoopEffect(%EffectHandle)
+		Set(%EffectHandle,null)
+	ENDIF
+	
+EVENT RevealFromStoryScript
+ON
+	OnItemEvent(__Me,"RevealFromStory")
+ACTIONS
+	Set(%NewIsVisible,1)
+	ItemEvent(__Me,"StoryReveal")
+		
+EVENT StopRevealFromStoryVFX
+ON
+	OnItemEvent(__Me,"StopRevealFromStory")
+ACTIONS
+	IF "!c1"
+		IsEqual(%EffectHandle,null)
+	THEN
+		StopLoopEffect(%EffectHandle)
+		Set(%EffectHandle,null)
+	ENDIF
+
+EVENT StopHighlightOnUse
+ON
+	OnUseItem(_,__Me)
+ACTIONS
+	IF "!c1"
+		IsEqual(%EffectHandle,null)
+	THEN
+		StopLoopEffect(%EffectHandle)
+		Set(%EffectHandle,null)
+	ENDIF
+
+EVENT Disarmed
+VARS
+	INT:_Success
+ON
+	OnItemDisarmEvent(__Me, _, _, _Success)
+ACTIONS
+	IF "c1&!c2"
+		IsEqual(_Success, 1)
+		IsEqual(%EffectHandle,null)
+	THEN
+		StopLoopEffect(%EffectHandle)
+		Set(%EffectHandle,null)
+	ENDIF

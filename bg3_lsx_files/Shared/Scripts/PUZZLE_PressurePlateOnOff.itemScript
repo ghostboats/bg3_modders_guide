@@ -1,0 +1,42 @@
+#INCLUDE PUZZLE_PressurePlate
+
+INIT
+USING PUZZLE_PressurePlate
+ITEM:__Me
+EXTERN STRING:%TurnOn=null
+EXTERN STRING:%TurnOff=null
+EXTERN INT:%PressurePlateActive=1
+
+EVENTS
+EVENT Initialize OVERRIDE
+ON
+	OnInit()
+ACTIONS
+	IF "c1"
+		IsEqual(%PressurePlateActive,1)
+	THEN
+		StartTimer("UpdatePressurePlate",0.1,-1)
+	ENDIF
+	
+EVENT TurnPlateOff
+ON
+	OnCharacterItemEvent(_, _, %TurnOn)
+ACTIONS
+	IF "!c1"
+		IsEqual(%TurnOn,null)
+	THEN
+		Set(%PressurePlateActive, 1)
+		StartTimer("UpdatePressurePlate",0.1,-1)
+	ENDIF
+
+
+EVENT TurnOff
+ON
+	OnCharacterItemEvent(_, _, %TurnOff)
+ACTIONS
+	IF "!c1"
+		IsEqual(%TurnOff,null)
+	THEN
+		Set(%PressurePlateActive, 0)
+		StopTimer("UpdatePressurePlate")
+	ENDIF

@@ -1,0 +1,16 @@
+INIT
+ITEM:__Me
+EXTERN INT:%DestroyOnDisarm = 1
+
+EVENTS
+
+EVENT Disarm
+ON
+	OnItemDisarmEvent(__Me, _, _, 1)
+ACTIONS
+	IF "c1" 
+		IsEqual(%DestroyOnDisarm, 1)
+	THEN
+		ItemDie(__Me,1)
+	ENDIF
+	

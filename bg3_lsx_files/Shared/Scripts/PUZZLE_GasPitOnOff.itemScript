@@ -1,0 +1,153 @@
+#INCLUDE PressurePlate
+#INCLUDE DisplayTextOnCharacter
+#INCLUDE ProximityTutorial
+#INCLUDE Generic/PUZZLE_Disarm
+INIT
+USING SHARED DisplayTextOnCharacter
+USING PressurePlate
+USING ProximityTutorial
+USING Generic/PUZZLE_Disarm
+
+ITEM:__Me
+INT:%PitIsSpewingGas = 1
+EXTERN SURFACE:%GasType = SurfacePoisonCloud
+EXTERN FLOAT:%GasRadius = 2
+EXTERN SURFACE:%SurfaceCheck = SurfaceFire
+EXTERN INT:%Active = 1
+EXTERN STRING:%OnEvent = null
+EXTERN STRING:%OffEvent = null
+EXTERN INT:%AllowSingleIgnite = 0
+FLOAT:%GasRadiusCheck = null
+EXTERN FIXEDSTRING: %DialogKey = "GEN_AD_DisarmTrap"
+EXTERN FIXEDSTRING: %ActiveFlag = ""
+
+EVENTS
+
+EVENT PitInit
+ON
+	OnInit()
+ACTIONS
+	Set(%GasRadiusCheck,%GasRadius)
+	Add(%GasRadiusCheck,0.5)
+
+EVENT GasPitOn
+ON
+	OnCharacterItemEvent(_,_,%OnEvent)
+ACTIONS
+	IF "!c1"
+		IsEqual(%OnEvent,null)
+	THEN
+		Set(%Active,1)
+	ENDIF
+	
+EVENT DisarmAttempt
+ON
+	OnItemDisarmEvent(__Me, _, _, 0)
+ACTIONS
+	Set(%Active,1)
+	
+EVENT GasPitOff
+ON
+	OnCharacterItemEvent(_,_,%OffEvent)
+ACTIONS
+	IF "!c1"
+		IsEqual(%OffEvent,null)
+	THEN
+		Set(%Active,0)	
+		CreateSurfaceAt(__Me,SurfaceNone,%GasRadius,-1)
+	ENDIF
+
+EVENT GasPitDestroy
+ON
+	OnItemDestroyed(__Me)
+ACTIONS
+	Set(%Active,0)	
+	CreateSurfaceAt(__Me,SurfaceNone,%GasRadius,-1)
+
+EVENT PlateChange
+ON
+	OnItemEvent(__Me,"PressurePlateChange")
+ACTIONS
+	IF "c1"
+		IsEqual(%CurrentPercentage,1)
+	THEN
+		Set(%PitIsSpewingGas,0)
+		IF "!c1"
+			IsEqual(%ActiveFlag,"")
+		THEN
+			ClearFlag(__Me,%ActiveFlag)
+		ENDIF
+		IF "c1"
+			ContainsSurface(__Me,%GasRadius,%GasType)
+		THEN
+			CreateSurfaceAt(__Me,SurfaceNone,%GasRadius,-1)
+		ENDIF
+	ELIF "c1"
+		IsEqual(%PreviousPercentage,1)
+	THEN
+		Set(%PitIsSpewingGas,1)
+		IF "!c1"
+			IsEqual(%ActiveFlag,"")
+		THEN
+			SetFlag(__Me,%ActiveFlag)
+		ENDIF
+	ENDIF
+	
+EVENT SpewOnCombatTick
+ON
+	OnCombatTick()
+ACTIONS
+	IF "c1&c2&c3&(c4|c5|!c6)&(!c7|!c8)"
+		IsEqual(%Active,1)
+		IsEqual(%PitIsSpewingGas,1)
+		CanCreateNewSurfaceAt(__Me,%GasRadius,%GasType)
+		IsEqual(%SurfaceCheck,SurfaceNone)
+		IsEqual(%AllowSingleIgnite,1)
+		ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+		IsEqual(%GasType,SurfacePoisonCloud)	
+		ContainsSurface(__Me,%GasRadiusCheck,SurfaceExplosionCloud)
+	THEN
+		CreateSurfaceAt(__Me,%GasType,%GasRadius,-1, __Me)
+		PlaySound(__Me,"II_Trap_Gaspit")
+		IF "c1&c2"
+			IsEqual(%AllowSingleIgnite,1)
+			ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+		THEN
+			Set(%AllowSingleIgnite,0)
+		ENDIF
+	ENDIF
+
+BEHAVIOUR
+ 
+REACTION PitSpewGas,1
+USAGE PEACE
+USAGE COMBAT
+CHECK "c1&c2&c3&(c4|c5|!c6)&(!c7|!c8)"
+	IsEqual(%Active,1)
+	IsEqual(%PitIsSpewingGas,1)
+	CanCreateNewSurfaceAt(__Me,%GasRadius,%GasType)
+	IsEqual(%SurfaceCheck,SurfaceNone)
+	IsEqual(%AllowSingleIgnite,1)
+	ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+	IsEqual(%GasType,SurfacePoisonCloud)	
+	ContainsSurface(__Me,%GasRadiusCheck,SurfaceExplosionCloud)
+ACTIONS	
+	CreateSurfaceAt(__Me,%GasType,%GasRadius,-1, __Me)
+	IF "!c1"
+		IsInSurface(__Me, %GasType, %GasRadius)
+	THEN
+		PlaySound(__Me,"II_Trap_Gaspit")
+	ENDIF
+	IF "c1"
+		IsEqual(%GasType,SurfacePoisonCloud)	
+	THEN
+		Sleep(0.8)
+	ELSE
+		Sleep(0.2)
+	ENDIF	
+	IF "c1&c2"
+		IsEqual(%AllowSingleIgnite,1)
+		ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+	THEN
+		Set(%AllowSingleIgnite,0)
+	ENDIF

@@ -1,0 +1,43 @@
+INIT
+ITEM:__Me
+EXTERN SPELL:%ExplosionProjectile=Projectile_Barrel_Explosion
+
+EVENTS 
+// When changing this event please apply the changes to the FetchSpellOnDamage event as well
+EVENT ReceiveFireDamage
+VARS
+	CHARACTER:_CharTarget
+	ITEM:_ItemTarget
+ON
+	OnDamage(Fire,_,_CharTarget,_ItemTarget)
+ACTIONS
+	IF "!c1"
+		ItemHasStatus(__Me,FROZEN)
+	THEN	
+		IF "!c1"
+			IsEqual(_CharTarget, null)
+		THEN
+			ExplodeAt(__Me,%ExplosionProjectile,0,_CharTarget)
+			CreateSurfaceAt(__Me, SurfaceFire, 1, 12, _CharTarget)
+		ELIF "!c1"
+			IsEqual(_ItemTarget, null)
+		THEN
+			ExplodeAt(__Me,%ExplosionProjectile,0,_ItemTarget)
+			CreateSurfaceAt(__Me, SurfaceFire, 1, 12, _ItemTarget)
+		ELSE
+			ExplodeAt(__Me,%ExplosionProjectile,0,__Me)
+			CreateSurfaceAt(__Me, SurfaceFire, 1, 12, __Me)
+		ENDIF
+		ItemDestroy(__Me)
+	ENDIF
+	
+EVENT FetchSpellOnDamage
+ON
+	FetchItemSpellOnDamage(_, Fire)
+ACTIONS
+	IF "!c1"
+		ItemHasStatus(__Me, FROZEN)
+	THEN
+		RETURN(1, %ExplosionProjectile, 0)
+	ENDIF
+	RETURN(0, %ExplosionProjectile, 0)

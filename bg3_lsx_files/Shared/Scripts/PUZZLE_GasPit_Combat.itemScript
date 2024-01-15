@@ -1,0 +1,93 @@
+#INCLUDE PressurePlate
+#INCLUDE DisplayTextOnCharacter
+#INCLUDE ProximityTutorial
+#INCLUDE PUZZLE_GasPit
+
+INIT
+USING SHARED DisplayTextOnCharacter
+USING SHARED ProximityTutorial
+USING PressurePlate
+USING SHARED PUZZLE_GasPit
+
+
+EVENTS
+EVENT MyTurn
+ON
+	OnTurn(_,__Me)
+ACTIONS
+	Interrupt("PitSpewGasCombat")
+	Interrupt("CombatPassTurn")
+
+
+EVENT LeaveTurnOrder
+ON
+	OnEnteredCombat(_,__Me)
+	OnTurnEnded(_,__Me)
+	OnLeftCombat(_,__Me)
+	OnDamage(_,_,_,_)
+	OnItemEvent(__Me,"PressurePlateChange")
+ACTIONS
+	//Remove from turn order if my turn is redundant
+	//CombatPassTurn exists as a fallback, but in theory, we should never need to reach it
+	IF "c1|c2|c3"
+		ContainsSurface(__Me,%GasRadius,%GasType)
+		ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+		IsEqual(%CurrentPercentage,1)
+	THEN
+		SetCanFight(__Me,0)
+	ELSE
+		SetCanFight(__Me,1)
+	ENDIF
+
+
+BEHAVIOUR
+
+REACTION PitSpewGasPeace,1 OVERRIDE
+USAGE PEACE
+CHECK "c1&c2&(c3|!c4)&(!c5|!c6)"
+	IsEqual(%SpewingGas,1)
+	CanCreateNewSurfaceAt(__Me,%GasRadius,%GasType)
+	IsEqual(%SurfaceCheck,SurfaceNone)
+	ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+	IsEqual(%GasType,SurfacePoisonCloud)	
+	ContainsSurface(__Me,%GasRadiusCheck,SurfaceExplosionCloud)
+ACTIONS	
+	CreateSurfaceAt(__Me,%GasType,%GasRadius,-1, __Me)
+	IF "c1"
+		IsEqual(%GasType,SurfacePoisonCloud)	
+	THEN
+		Sleep(0.8)
+	ELSE
+		Sleep(0.2)
+	ENDIF
+
+REACTION PitSpewGasCombat,2
+USAGE COMBAT
+CHECK "c1&c2&(c3|!c4)&(!c5|!c6)"
+	IsEqual(%SpewingGas,1)
+	CanCreateNewSurfaceAt(__Me,%GasRadius,%GasType)
+	IsEqual(%SurfaceCheck,SurfaceNone)
+	ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+	IsEqual(%GasType,SurfacePoisonCloud)	
+	ContainsSurface(__Me,%GasRadiusCheck,SurfaceExplosionCloud)
+ACTIONS	
+	Sleep(1.0)
+	IF "c1"
+		IsInActiveTurn(__Me)
+	THEN
+		CreateSurfaceAt(__Me,%GasType,%GasRadius,-1, __Me)
+		Sleep(2.0)
+		EndTurn(__Me)
+	ENDIF
+INTERRUPT
+ACTIONS
+	Reset()
+	
+REACTION CombatPassTurn,1
+USAGE COMBAT	
+ACTIONS
+	//Combat Fallback
+	//"Should" never reach here
+	Sleep(2.0)
+	EndTurn(__Me)
+

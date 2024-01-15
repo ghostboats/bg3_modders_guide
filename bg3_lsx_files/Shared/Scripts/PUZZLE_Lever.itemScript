@@ -1,0 +1,82 @@
+INIT
+ITEM:__Me
+EXTERN STRING:%Event=null
+EXTERN STRING:%CommentAD=null
+
+INT:%CurrentState = 0
+INT:%WantedState = 0
+CHARACTER:%UsedBy = null
+
+EVENTS
+  
+EVENT LeverUse
+VARS
+CHARACTER:_Char
+ON
+	OnUseItem(_Char,__Me)
+	OnCharacterItemEvent(_Char, __Me, "GLO_HitByAttack")
+ACTIONS
+	IF "!c1"
+		ItemIsLocked(__Me)
+	THEN
+		IF "c1"
+		IsEqual(%UsedBy,null)
+		THEN
+		Set(%UsedBy,_Char)
+		ENDIF
+		SetPriority("GoOn",10)
+	ENDIF
+	//Set(%WantedState,1)
+
+EVENT OnUnlocked_LeverUse
+VARS
+CHARACTER:_Char
+ON
+	OnItemUnlocked(__Me,_,_)
+ACTIONS
+	IF "c1"
+		IsEqual(%UsedBy,null)
+	THEN
+		Set(%UsedBy,_Char)
+	ENDIF
+	SetPriority("GoOn",10)
+
+EVENT Reactivate
+ON
+	OnFunction("Reactivate")
+ACTIONS
+	ItemSetCanInteract(__Me,1)
+
+BEHAVIOUR
+REACTION GoOn,0
+USAGE ALL
+VARS
+	ITEMTEMPLATE:_Template
+	FIXEDSTRING:_CommentADFixedString
+ACTIONS
+	ItemSetCanInteract(__Me,0)
+	ItemPlayAnimation(OBJ_Open_Unused_01_1c8ad609-f780-418e-9fdf-c52f6d749c9f)
+	Set(%CurrentState,%WantedState)
+	
+	IF "!c1"
+		IsEqual(%CommentAD, null)
+	THEN
+		Cast(_CommentADFixedString,%CommentAD)
+		DialogStart(_,_CommentADFixedString,%UsedBy)
+		Set(%CommentAD,null)
+	ENDIF
+	
+	ItemPlayEffect(__Me, "VFX_Script_Generic_Lever_01")
+	 
+	IF "!c1"
+		IsEqual(%Event, null)
+	THEN
+		CharacterItemEvent(%UsedBy,__Me,%Event)
+	ENDIF
+	ItemPlayAnimation(OBJ_Close_Unused_01_a7078367-8eed-4ba7-a436-196774f68a60)
+	Set(%UsedBy,null)
+	CallFunction("Reactivate")
+	SetPriority("GoOn",0)
+INTERRUPT
+ACTIONS
+	Reset()

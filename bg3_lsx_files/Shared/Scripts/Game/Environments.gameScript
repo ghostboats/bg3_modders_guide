@@ -1,0 +1,213 @@
+EVENTS
+	
+EVENT BlizzardEnter
+VARS
+	CHARACTER:_Character
+	CHARACTERTEMPLATE:_Temp	
+ON 
+	OnTriggerEnter(_Character,_,"BlizzardEnter")
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+	THEN
+		AddStatusInfluence(_Character,CHILLED,20)
+	ENDIF
+	
+EVENT BlizzardLeave
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerLeave(_Character,_,"BlizzardLeave")
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+	THEN
+		RemoveStatusInfluence(_Character,CHILLED,20)	
+	ENDIF
+
+EVENT WaterEnter
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerEnter(_Character,_,"WaterEventOn")
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+	THEN
+		AddStatusInfluence(_Character, WET, 40)
+	ENDIF
+	
+EVENT WaterLeave
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerLeave(_Character,_,"WaterEventOff")
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+	THEN
+		AddTemporaryStatusInfluence(_Character, _Character, WET, 40)
+		RemoveStatusInfluence(_Character, WET, 40)	
+	ENDIF
+	
+EVENT RainEnter
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerEnter(_Character,_,"RainEventOn")
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+	THEN
+		AddStatusInfluence(_Character, WET, 20)
+	ENDIF
+	
+EVENT RainLeave
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerLeave(_Character,_,"RainEventOff")
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+	THEN
+		RemoveStatusInfluence(_Character, WET, 20)	
+	ENDIF
+
+EVENT SewageEnter
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerEnter(_Character,_,"EventSewageOn")
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+	THEN
+		//AddStatusInfluence(_Character, SLOWED, 20)
+		AddStatusInfluence(_Character, SMELLY, 20)
+	ENDIF
+	
+EVENT SewageLeave
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerLeave(_Character,_,"EventSewageOff")
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+	THEN
+		//RemoveStatusInfluence(_Character, SLOWED, 20)
+		RemoveStatusInfluence(_Character, SMELLY, 20)
+	ENDIF
+
+EVENT CurseEnter
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerEnter(_Character,_,"CurseEventOn")
+ACTIONS
+	IF "!c1&!c2&!c3&!c4"
+		IsEqual(_Character,null)
+		IsTagged(_Character,"GHOST")
+		IsTagged(_Character,"UNDEAD")
+		IsTagged(_Character,"ILLITHID")
+	THEN
+		AddStatusInfluence(_Character, CHILL_TOUCH, 40) //replace Chill Touch
+	ENDIF
+	
+EVENT CurseLeave
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerLeave(_Character,_,"CurseEventOff")
+ACTIONS
+	IF "!c1&!c2&!c3&!c4"
+		IsEqual(_Character,null)
+		IsTagged(_Character,"GHOST")
+		IsTagged(_Character,"UNDEAD")
+		IsTagged(_Character,"ILLITHID")
+	THEN
+		RemoveStatusInfluence(_Character, CHILL_TOUCH, 40)	
+	ENDIF
+	
+EVENT DeepWaterEnter
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerEnter(_Character,_,"DrowningOn")
+ACTIONS
+	IF "!c1&!c2&c3"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+		IsTagged(_Character, "SMALL")
+	THEN
+		AddStatusInfluence(_Character, DEN_HARPYMEAL_DROWNING, 40)
+	ENDIF
+	
+EVENT DeepWaterLeave
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerLeave(_Character,_,"DrowningOff")
+ACTIONS
+	IF "!c1&!c2&c3"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "GHOST")
+		IsTagged(_Character, "SMALL")
+	THEN
+		RemoveStatusInfluence(_Character, DEN_HARPYMEAL_DROWNING, 40)	
+	ENDIF
+	
+	
+EVENT SpiderInfestationStart
+VARS
+	CHARACTER:_Character
+ON
+	OnCharacterEvent(_Character,"SpiderInfestationStart")
+ACTIONS
+	AddStatusInfluence(_Character,SPIDER_INFESTATION, 40)
+	
+EVENT SpiderInfestationEnd
+VARS
+	CHARACTER:_Character
+ON
+	OnCharacterEvent(_Character,"SpiderInfestationEnd")
+ACTIONS
+	RemoveStatusInfluence(_Character,SPIDER_INFESTATION, 40)	
+	
+EVENT HotWeatherEnter
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerEnter(_Character,_,"HotWeatherOn")
+ACTIONS
+	IF "!c1&!c2&!c3&!c4&!c5"
+		IsEqual(_Character,null)
+		IsTagged(_Character, "CONSTRUCT")
+		IsTagged(_Character, "UNDEAD")
+		IsTagged(_Character, "OOZE")
+		IsTagged(_Character, "ELEMENTAL")
+	THEN
+		AddStatusInfluence(_Character, SWEATY, 40)
+	ENDIF
+	
+EVENT HotWeatherLeave
+VARS
+	CHARACTER:_Character
+ON 
+	OnTriggerLeave(_Character,_,"HotWeatherOff")
+ACTIONS
+	IF "!c1"
+		IsEqual(_Character,null)
+	THEN
+		RemoveStatusInfluence(_Character, SWEATY, 40)	
+	ENDIF
+	

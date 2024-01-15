@@ -1,0 +1,18 @@
+INIT
+	ITEM:__Me
+	EXTERN STRING:%EventOn = null
+	EXTERN STRING:%EventOff = null
+	
+EVENTS
+
+EVENT TurnOff
+ON
+	OnCharacterItemEvent(_,_,%EventOff)
+ACTIONS
+	ItemClose(__Me)
+
+EVENT TurnOn
+ON
+	OnCharacterItemEvent(_,_,%EventOn)
+ACTIONS
+	ItemOpen(__Me)

@@ -1,0 +1,55 @@
+#INCLUDE Grenade
+
+INIT
+
+ITEM:__Me
+EXTERN FLOAT:%LifeTime=0
+
+EXTERN SPELL:%ProjectileSpell=null
+CHARACTER:%Caster=null
+
+EVENTS
+
+EVENT GrenadeInit
+ON 
+	OnInit()
+ACTIONS
+	IF "c1"
+		ItemGetSpellId(__Me,%ProjectileSpell)
+	THEN		
+	ENDIF
+	
+EVENT GrenadeTrigger
+VARS
+	ITEM:_ItemSource
+	DAMAGE:_DamageType
+ON
+	OnFunction("GrenadeTrigger")
+	OnDamage(_DamageType,_,_,_ItemSource)
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(__Me,_ItemSource)
+		IsEqual(_DamageType, None)
+	THEN
+		ExplodeAt(__Me,%ProjectileSpell, 0,%Caster)
+	ENDIF
+
+/*
+Commented out because was no longer hooked up in the game engine, and hence removed.
+
+Needs a replacement when converted to constellation script.
+	
+EVENT GrenadeLand
+VARS 
+	INT:_hitObstacle
+	CHARACTER:_caster	
+ON
+	OnGrenadeLand(_hitObstacle, _caster)
+ACTIONS
+	Set(%Caster, _caster)
+	IF "c1"
+		IsEqual(_hitObstacle,1)
+	THEN
+		CallFunction("GrenadeTrigger")		
+	ENDIF
+*/

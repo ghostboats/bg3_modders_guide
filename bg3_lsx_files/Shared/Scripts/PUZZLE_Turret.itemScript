@@ -1,0 +1,70 @@
+#INCLUDE Generic/PUZZLE_Disarm
+INIT
+	USING Generic/PUZZLE_Disarm
+	ITEM:__Me
+	EXTERN STRING:%TurretShootEvent = ""
+	EXTERN SPELL:%TurretProjectileSpell = Projectile_Fireball_Trap
+	EXTERN ITEM:%TargetItem=null
+	EXTERN TRIGGER:%TargetTrig=null
+	EXTERN SPELL:%TurretConeSpell = Target_NULLSPELL
+	EXTERN FLOAT3:%TurretOffset = {0;0;0}
+	EXTERN STRING:%PlayEffect = ""
+
+EVENTS
+
+EVENT Shoot
+VARS 
+	FLOAT3:_Dir
+ON
+	OnCharacterItemEvent(_, _, %TurretShootEvent)
+	OnItemEvent(_,%TurretShootEvent)
+	OnItemDisarmEvent(__Me, _, _, 0)
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(%PlayEffect,null)
+		IsEqual(%PlayEffect,"")
+	THEN
+		ItemPlayEffect(__Me,%PlayEffect,"Dummy_FX")
+	ENDIF
+	IF "!c1&!c2"
+		IsEqual(%TurretProjectileSpell,null)
+		IsEqual(%TurretProjectileSpell,SPELL:Target_NULLSPELL)
+	THEN
+		//If I have a direct target, shoot that, otherwise, use Forward Dir
+		IF  "!c1"
+			IsEqual(%TargetItem,null)
+		THEN
+			ShootLocalProjectileAt(%TurretProjectileSpell, __Me, %TurretOffset, %TargetItem)
+			ItemEvent(__Me, "fire")
+		ELIF "!c1"
+			IsEqual(%TargetTrig,null)
+		THEN
+			ShootLocalProjectileAt(%TurretProjectileSpell, __Me, %TurretOffset, %TargetTrig)
+			ItemEvent(__Me, "fire")
+		ELSE
+			GetForwardDirection(__Me, _Dir)
+			ShootLocalProjectile(%TurretProjectileSpell, __Me, %TurretOffset, _Dir)
+			ItemEvent(__Me, "fire")
+		ENDIF
+	ENDIF
+	IF "!c1&!c2"
+		IsEqual(%TurretConeSpell,null)
+		IsEqual(%TurretConeSpell,SPELL:Target_NULLSPELL)
+	THEN
+			//If I have a direct target, shoot that, otherwise, use Forward Dir
+		IF  "!c1"
+			IsEqual(%TargetItem,null)
+		THEN
+			ShootLocalConeAt(%TurretConeSpell, __Me, %TurretOffset, %TargetItem)
+			ItemEvent(__Me, "fire")
+		ELIF "!c1"
+			IsEqual(%TargetTrig,null)
+		THEN
+			ShootLocalConeAt(%TurretConeSpell, __Me, %TurretOffset, %TargetTrig)
+			ItemEvent(__Me, "fire")
+		ELSE
+			GetForwardDirection(__Me, _Dir)
+			ShootLocalCone(%TurretConeSpell, __Me, %TurretOffset, _Dir)
+			ItemEvent(__Me, "fire")
+		ENDIF
+	ENDIF

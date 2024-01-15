@@ -1,0 +1,119 @@
+INIT
+ITEM:__Me
+
+EXTERN STRING:%BurnEffect = "VFX_Status_Fire_01"
+EXTERN FIXEDSTRING:%BurnEffectBone = ""
+EXTERN INT:%EnableGameplayLight = 0
+EXTERN FLOAT:%GameplayLightRadius = 5
+EXTERN FLOAT:%LightSharpnessOverride = 0.95
+EXTERN FLOAT:%GameplayLightOffsetX = 0
+EXTERN FLOAT:%GameplayLightOffsetY = 0
+EXTERN FLOAT:%GameplayLightOffsetZ = 0
+EXTERN FLOAT:%PointLightVerticalLimit = 2.5
+
+INT64:%BurningFX = null
+
+INT64:%EditorFX = null
+
+FLOAT3:%GameplayLightOffset = {0;0;0}
+
+INT:%PreviewIsOn = 0
+INT:%DoEffect = 0
+
+EVENTS
+
+EVENT LoadBurningItem
+ON
+	OnLoaded(_,_,_,_)
+ACTIONS
+	Set(%BurningFX,null)
+
+EVENT SwitchGameplayLightOn
+ON
+	OnFunction(SwitchGameplayLightOn)
+ACTIONS
+	IF "!c1"
+		IsEqual(%EnableGameplayLight,0)
+	THEN
+		SetX(%GameplayLightOffset, %GameplayLightOffsetX)
+		SetY(%GameplayLightOffset, %GameplayLightOffsetY)
+		SetZ(%GameplayLightOffset, %GameplayLightOffsetZ)
+		SwitchGameplayLight(__Me, 1, %GameplayLightRadius, 0, %LightSharpnessOverride, 0, %GameplayLightOffset, %PointLightVerticalLimit)
+	ENDIF
+
+EVENT SwitchGameplayLightOff
+ON
+	OnFunction(SwitchGameplayLightOff)
+ACTIONS
+	IF "!c1"
+		IsEqual(%EnableGameplayLight,0)
+	THEN
+		SetX(%GameplayLightOffset, %GameplayLightOffsetX)
+		SetY(%GameplayLightOffset, %GameplayLightOffsetY)
+		SetZ(%GameplayLightOffset, %GameplayLightOffsetZ)
+		SwitchGameplayLight(__Me, 0, %GameplayLightRadius, 0, %LightSharpnessOverride, 0, %GameplayLightOffset, %PointLightVerticalLimit)
+	ENDIF
+
+EVENT SetupPreviewVisual
+ON
+	OnFunction(SetupPreviewVisual)
+ACTIONS
+	IF "c1"
+		IsEqual(%DoEffect,1)
+	THEN
+		CallFunction(SwitchGameplayLightOn)
+	ENDIF
+
+EVENT CreateBurningVisuals
+ON
+	OnStatusCreateVisuals(BURNING)
+ACTIONS
+	IF "c1"
+		IsEqual(%BurningFX,null)
+	THEN
+		ItemPlayLoopEffect(%BurningFX,__Me,%BurnEffect,%BurnEffectBone)
+		CallFunction(SwitchGameplayLightOn)
+	ENDIF
+
+EVENT DestroyBurningVisuals
+ON
+	OnStatusDestroyVisuals(BURNING)
+ACTIONS
+	IF "!c1"
+		IsEqual(%BurningFX,null)
+	THEN
+		StopLoopEffect(%BurningFX)
+		Set(%BurningFX,null)
+		CallFunction(SwitchGameplayLightOff)
+	ENDIF
+	
+	IF "c1"
+		IsEqual(%PreviewIsOn,1)
+	THEN
+		CallFunction(SetupPreviewVisual)
+	ENDIF
+
+EVENT CreateEditorVisuals
+ON
+	OnCreateEditorPreviewVisuals()
+VARS
+	INT:_DoEffect
+ACTIONS
+	Set(%PreviewIsOn,1)
+	IF "c1&c2"
+		GetVar(_DoEffect,__Me,"IsStatusOn")
+		IsEqual(_DoEffect,1)
+	THEN
+		ItemPlayLoopEffect(%EditorFX,__Me,%BurnEffect,%BurnEffectBone)
+		Set(%DoEffect, 1)
+	ENDIF
+	CallFunction(SetupPreviewVisual)
+
+EVENT DestroyEditorVisuals
+ON
+	OnDestroyEditorPreviewVisuals()
+ACTIONS
+	Set(%PreviewIsOn,0)
+	StopLoopEffect(%EditorFX)
+	Set(%EditorFX,null)
+	CallFunction(SwitchGameplayLightOff)

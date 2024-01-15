@@ -1,0 +1,25 @@
+#INCLUDE PUZZLE_TrappedPerception
+
+INIT
+	USING SHARED PUZZLE_TrappedPerception
+	ITEM:__Me
+	EXTERN SPELL:%TrapProjectile=Projectile_Fireball_Trap	
+	EXTERN INT:%IsOneShot = 0
+
+EVENTS
+
+EVENT TriggerTrap
+VARS
+CHARACTER:_Character
+ON
+	OnItemDisarmEvent(__Me, _Character, _, 0)
+	OnArmedTrapUsed(_Character, __Me)
+	OnItemDestroying(__Me)
+ACTIONS
+	IF "c1"
+		IsEqual(%IsOneShot,1)
+	THEN
+		ItemItemEvent(__Me,__Me,"Disarm")
+	ENDIF
+	ExplodeAt(__Me,%TrapProjectile,0,__Me)
+	

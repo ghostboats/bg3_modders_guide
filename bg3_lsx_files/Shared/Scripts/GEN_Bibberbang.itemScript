@@ -1,0 +1,264 @@
+INIT	
+	ITEM:__Me
+	
+	EXTERN FLOAT:%WarningRadius = 4.0
+	EXTERN FLOAT: %ArmingTime = 1.0
+	EXTERN FLOAT:%ExplosionRadius = 2.5	
+	FLOAT:%ExplosionDelayTime = 0.1	
+	EXTERN INT:%SurfaceDurationInTurns = 2 // TODO: make internal
+	EXTERN FLOAT:%SurfaceRadius = 5.0 // TODO: make internal
+	EXTERN FLOAT:%resetDuration = 18.0
+	
+	INT:%IsArming = 0
+	INT:%IsGlowing = 0
+	INT:%HasCharactersNearby
+	INT:%Deployed = 0
+	INT:%Explosion = 0
+	INT:%Deactivated = 0	
+	INT:%ProducedSpores = 0
+	INT: %HasCharactersInWarning = 0
+	INT: %HasCharactersInExplosion = 0
+	INT: %InSurface = 0
+		
+	EXTERN SURFACE: %Surface = SurfaceSporeGreenCloud
+		
+	INT64: %GlowingFXHandle = null		
+	EXTERN STRING: %GlowingFX = "VFX_Script_PUZ_Underdark_Mushroom_Bibberbang_B_02"
+	INT64: %PulsatingFXHandle = null		
+	EXTERN STRING: %PulsatingFX = "VFX_Script_PUZ_Underdark_Mushroom_Bibberbang_B_01"
+	EXTERN STRING: %ReleaseSporesSound = "VFX_Mushroom_Bibberbang_GasEmit"
+
+BEHAVIOUR
+
+REACTION PeaceDeployment, 101
+USAGE PEACE
+CHECK "c1"
+	IsEqual(%Deployed, 0)
+ACTIONS	
+	Set(%Deployed, 1)	
+	SetCanFight(__Me, 0)
+	StartTimer("UpdateProximityMine", 0.1, -1)
+	
+REACTION CombatDeployment, 101
+USAGE COMBAT
+ACTIONS
+	IF "c1"
+		IsEqual(%Deployed, 0)
+	THEN
+		Set(%Deployed, 1)		
+		StartTimer("UpdateProximityMine", 0.1, -1)
+		Sleep(0.1)
+		SetCanFight(__Me, 0)
+	ENDIF	
+	EndTurn(__Me)
+	
+REACTION Explosion, 100
+USAGE ALL
+CHECK "c1&c2&c3"
+	IsEqual(%Deployed, 1)
+	IsEqual(%Explosion, 1)
+	IsEqual(%ProducedSpores, 0)
+ACTIONS	
+	Sleep(%ExplosionDelayTime)	
+	ItemEvent(__Me, "UND_Bibberbang_ProduceSpores")
+	
+	
+EVENTS
+	
+EVENT ProduceSpores
+ON
+	OnItemEvent(__Me, "UND_Bibberbang_ProduceSpores")	
+ACTIONS
+	IF "c1"
+		IsEqual(%ProducedSpores, 0)
+	THEN				
+		CallFunction("StopGlowing")
+		CallFunction("StopArming")
+		Set(%ProducedSpores, 1)
+		StartTimer("Reset", %resetDuration, 0)		
+		CreateSurfaceAt(__Me, %Surface, %SurfaceRadius, %SurfaceDurationInTurns)
+		PlaySound(__Me,%ReleaseSporesSound)
+	ENDIF
+
+EVENT UpdateProximity
+VARS
+	INT: _InSurface
+ON
+	OnTimer("UpdateProximityMine")	
+ACTIONS		
+	IF "c1&c2&c3"
+		IsEqual(%ProducedSpores, 0)
+		IsEqual(%Explosion, 0)
+		IsEqual(%Deactivated, 0)
+	THEN	
+		// Checking explosion zone	
+		Set(%HasCharactersInExplosion, 0)
+		IF "c1"
+			ContainsSurface(__Me, 1.0, %Surface)
+		THEN
+			Set(_InSurface, 1)
+			Set(%HasCharactersInExplosion, 1)
+		ELSE		
+			Set(_InSurface, 0)			
+			IterateCharactersNear(__Me, %ExplosionRadius, "IterateExplosion")	
+		ENDIF		
+		IF "c1"
+			IsEqual(%HasCharactersInExplosion, 1)			
+		THEN
+			IF "c1"
+				IsEqual(%IsArming, 0)
+			THEN
+				Set(%IsArming, 1)
+				StartTimer("ArmingBeforeExplosion", %ArmingTime, -1)				
+			ENDIF
+		ELSE
+			CallFunction("StopArming")
+		ENDIF
+		
+		// Checking warning zone
+		Set(%HasCharactersInWarning, 0)
+		IterateCharactersNear(__Me, %WarningRadius, "IterateWarning")					
+		IF "c1"//"c1&c2"
+			IsEqual(%HasCharactersInWarning, 1)
+			//IsEqual(%HasCharactersInExplosion, 0)
+		THEN
+			IF "c1"
+				IsEqual(%IsGlowing, 0)
+			THEN
+				Set(%IsGlowing, 1)
+				ItemPlayLoopEffect(%GlowingFXHandle,__Me, %GlowingFX)
+			ENDIF
+		ELSE
+			CallFunction("StopGlowing")
+		ENDIF	
+	
+		IF "c1&c2&c3&c4"
+			IsEqual(%InSurface, 0)
+			IsEqual(_InSurface, 1)
+			IsEqual(%IsArming, 1)
+			IsEqual(%IsGlowing, 0)			
+		THEN
+			Set(%InSurface, 1)
+			ItemPlayLoopEffect(%PulsatingFXHandle,__Me, %PulsatingFX)
+		ELSE	
+			CallFunction("StopSurface")		
+		ENDIF
+	ENDIF
+
+EVENT IterateWarning
+VARS
+	CHARACTER:_Char
+	FLOAT: _Weight
+ON
+	OnIterateCharacter(_Char, "IterateWarning")
+ACTIONS		
+	IF "!c1&c2&!c3&!c4&!c5"
+		CharacterIsDead(_Char)		
+		CharacterGetStat(_Weight, _Char, Weight)
+		IsLessThen(_Weight, 101) // we need to ignore Mage Hands and other spectral stuff that weighs almost nothing (100 gr or less)
+		IsTagged(_Char, "MYCONID")			
+		CharacterHasStatus(_Char, "UND_SOVEREIGNKEY")	
+	THEN
+		Set(%HasCharactersInWarning, 1)		
+	ENDIF
+	
+EVENT IterateExplosion
+VARS
+	CHARACTER:_Char
+	FLOAT: _Weight
+ON
+	OnIterateCharacter(_Char, "IterateExplosion")
+ACTIONS		
+	IF "!c1&c2&!c3&!c4&!c5"
+		CharacterIsDead(_Char)		
+		CharacterGetStat(_Weight, _Char, Weight)
+		IsLessThen(_Weight, 101) // we need to ignore Mage Hands and other spectral stuff that weighs almost nothing (100 gr or less)
+		IsTagged(_Char, "MYCONID")			
+		CharacterHasStatus(_Char, "UND_SOVEREIGNKEY")	
+	THEN
+		Set(%HasCharactersInExplosion, 1)				
+	ENDIF
+
+EVENT OnArmingTimer
+ON
+	OnTimer("ArmingBeforeExplosion")	
+ACTIONS	
+	IF "c1&c2"
+		IsEqual(%IsArming, 1)
+		IsEqual(%Explosion, 0)		
+	THEN
+		Set(%Explosion, 1)
+	ENDIF	
+
+EVENT StopArming
+ON
+	OnFunction("StopArming")
+ACTIONS
+	IF "c1"
+		IsEqual(%IsArming, 1)
+	THEN
+		StopTimer("ArmingBeforeExplosion")			
+		Set(%IsArming, 0)		
+	ENDIF
+	
+EVENT StopGlowing
+ON
+	OnFunction("StopGlowing")
+ACTIONS
+	IF "c1"
+		IsEqual(%IsGlowing, 1)
+	THEN
+		StopLoopEffect(%GlowingFXHandle, 0)
+		Set(%IsGlowing, 0)
+	ENDIF
+	
+EVENT StopSurface
+ON
+	OnFunction("StopSurface")
+ACTIONS
+	IF "c1"
+		IsEqual(%InSurface, 1)
+	THEN
+		Set(%InSurface, 0)
+		StopLoopEffect(%PulsatingFXHandle, 0)
+	ENDIF
+				
+	
+EVENT Reset
+ON
+	OnTimer("Reset")
+ACTIONS	
+	Set(%ProducedSpores, 0)		
+	CallFunction("StopGlowing")
+	CallFunction("StopArming")
+	CallFunction("StopSurface")
+	Set(%Explosion, 0)
+	
+EVENT OnItemDestroying
+ON	
+	OnItemDestroying(__Me)
+ACTIONS
+	Set(%Deactivated, 1)
+	StopTimer("UpdateProximityMine")	
+	IF "c1"
+		IsEqual(%Explosion, 0)
+	THEN
+		ItemEvent(__Me, "UND_Bibberbang_ProduceSpores")
+	ENDIF
+	CallFunction("StopGlowing")
+	CallFunction("StopArming")
+	CallFunction("StopSurface")
+	Set(%GlowingFXHandle, null)
+	Set(%PulsatingFXHandle, null)
+	
+EVENT Shutdown
+ON
+	OnShutdown()
+	OnItemDestroying(__Me)
+ACTIONS		
+	CallFunction("StopGlowing")
+	CallFunction("StopArming")
+	CallFunction("StopSurface")
+	Set(%GlowingFXHandle, null)
+	Set(%PulsatingFXHandle, null)
+	StopTimer("UpdateProximityMine")

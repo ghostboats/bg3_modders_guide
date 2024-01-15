@@ -1,0 +1,95 @@
+#INCLUDE PressurePlate
+#INCLUDE DisplayTextOnCharacter
+#INCLUDE ProximityTutorial
+#INCLUDE Generic/PUZZLE_Disarm
+INIT
+USING SHARED DisplayTextOnCharacter
+USING SHARED ProximityTutorial
+USING PressurePlate
+USING Generic/PUZZLE_Disarm
+
+ITEM:__Me
+INT:%SpewingGas = 1
+EXTERN SURFACE:%GasType = SurfacePoisonCloud
+EXTERN FLOAT:%GasRadius = 2
+EXTERN SURFACE:%SurfaceCheck = SurfaceFire
+FLOAT:%GasRadiusCheck = null
+EXTERN FIXEDSTRING:%DialogKey = "GEN_AD_DisarmTrap"
+STRING:%TutorialMessage = "TUT_GasPit"
+
+EVENTS
+
+EVENT OnPitInit
+ON
+	OnInit()
+ACTIONS
+	Set(%GasRadiusCheck,%GasRadius)
+	Add(%GasRadiusCheck,0.5)
+	Set(%TutorialTriggerRange,%GasRadius)
+	Add(%TutorialTriggerRange,2)
+
+EVENT OnPitDisarm
+ON
+	OnItemDestroyed(__Me)
+ACTIONS
+	Set(%SpewingGas,0)
+	IF "c1"
+		ContainsSurface(__Me,%GasRadius,%GasType)
+	THEN
+		CreateSurfaceAt(__Me,SurfaceNone,%GasRadius,-1)
+	ENDIF
+	
+EVENT OnPlateChange
+ON
+	OnItemEvent(__Me,"PressurePlateChange")
+ACTIONS
+	IF "c1"
+		IsEqual(%CurrentPercentage,1)
+	THEN
+		Set(%SpewingGas,0)
+		IF "c1"
+			ContainsSurface(__Me,%GasRadius,%GasType)
+		THEN
+			CreateSurfaceAt(__Me,SurfaceNone,%GasRadius,-1)
+		ENDIF
+	ELIF "c1"
+		IsEqual(%PreviousPercentage,1)
+	THEN
+		Set(%SpewingGas,1)
+	ENDIF
+	
+EVENT SpewOnCombatTick
+ON
+	OnCombatTick()
+ACTIONS
+	IF "c1&c2&(c3|!c4)&(!c5|!c6)"
+		IsEqual(%SpewingGas,1)
+		CanCreateNewSurfaceAt(__Me,%GasRadius,%GasType)
+		IsEqual(%SurfaceCheck,SurfaceNone)
+		ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+		IsEqual(%GasType,SurfacePoisonCloud)	
+		ContainsSurface(__Me,%GasRadiusCheck,SurfaceExplosionCloud)
+	THEN
+		CreateSurfaceAt(__Me,%GasType,%GasRadius,-1, __Me)
+	ENDIF
+		
+BEHAVIOUR
+REACTION PitSpewGasPeace,1
+USAGE PEACE
+USAGE COMBAT
+CHECK "c1&c2&(c3|!c4)&(!c5|!c6)"
+	IsEqual(%SpewingGas,1)
+	CanCreateNewSurfaceAt(__Me,%GasRadius,%GasType)
+	IsEqual(%SurfaceCheck,SurfaceNone)
+	ContainsSurface(__Me,%GasRadius,%SurfaceCheck)
+	IsEqual(%GasType,SurfacePoisonCloud)	
+	ContainsSurface(__Me,%GasRadiusCheck,SurfaceExplosionCloud)
+ACTIONS	
+	CreateSurfaceAt(__Me,%GasType,%GasRadius,-1, __Me)
+	IF "c1"
+		IsEqual(%GasType,SurfacePoisonCloud)	
+	THEN
+		Sleep(0.8)
+	ELSE
+		Sleep(0.2)
+	ENDIF

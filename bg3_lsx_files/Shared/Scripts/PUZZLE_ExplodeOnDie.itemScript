@@ -1,0 +1,12 @@
+INIT
+
+ITEM:__Me
+EXTERN SPELL:%ItemProjectileSpell = Projectile_Fireball_Trap
+
+EVENTS 
+
+EVENT Explode
+ON
+	OnItemDestroyed(__Me)
+ACTIONS
+	ExplodeAt(__Me, %ItemProjectileSpell, 0,__Me)

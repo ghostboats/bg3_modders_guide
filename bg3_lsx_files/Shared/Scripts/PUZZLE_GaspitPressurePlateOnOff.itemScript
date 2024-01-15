@@ -1,0 +1,11 @@
+#INCLUDE PUZZLE_GasPitOnOff
+#INCLUDE PUZZLE_PressurePlateOnOff
+INIT
+USING PUZZLE_GasPitOnOff
+USING PUZZLE_PressurePlateOnOff
+ITEM:__Me
+
+//----
+//The hybrid of a pressure plate that can be turned off (with Turn Off/ Turn On)
+//Send in events Event On/ Event Off
+//and a gaspit that can be turned off (with OnEvent and OffEvent)

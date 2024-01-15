@@ -1,0 +1,204 @@
+INIT
+	ITEM:__Me
+	INT:%CurrentIsVisible=0
+	INT:%TimerStopped=0
+	EXTERN FLOAT:%MinDistance=5.0
+	EXTERN INT:%IsInvestigation = 0
+	EXTERN TRIGGER:%RevealOnlyInTrigger = null
+	EXTERN INT:%DC = 10
+	INT64:%EffectHandle = null
+	LIST<CHARACTER>: %CheckedCharacters
+	CHARACTER: %CheckAdvantage_Character = null
+	INT: %CheckAdvantage_Result = 0
+
+EVENTS
+EVENT InitializeHidden
+ON
+	OnInit()
+ACTIONS	
+	IF "c1"
+		IsEqual(%TimerStopped,0)
+	THEN
+		StartTimer("UpdateHidden",0.2,-1)
+	ENDIF
+	ItemSetDiscoveredTrap(__Me, %CurrentIsVisible) //Done to make sure the initial discovered state is false, but it's no longer set to false once the trap is discovered.
+
+EVENT ShutdownHidden
+ON
+	OnShutdown()
+	OnItemDestroying(__Me)
+ACTIONS
+	IF "c1"
+		IsEqual(%TimerStopped,0)
+	THEN
+		StopTimer("UpdateHidden")
+	ENDIF
+
+EVENT UpdateHidden
+ON
+	OnTimer("UpdateHidden")
+ACTIONS
+	IterateParty("HiddenObjectCheck")
+
+EVENT CheckHidden
+VARS
+	CHARACTER: _Char
+	FLOAT:     _Dist
+	STRING:    _Event
+	INT: 	   _AllowEvent
+	INT: 	   _CharCount
+	INT: 	   _CharSize
+	CHARACTER: _CheckedChar
+	STRING:    _Skill
+	INT:       _DCadjusted
+ON
+	OnIterateCharacter(_Char,"HiddenObjectCheck")
+ACTIONS
+	IF "c1&!c2&!c3&(c4|c5)&c6&c7&c8" 
+		IsEqual(%CurrentIsVisible,0)			//c1
+		CharacterIsDead(_Char)					//c2
+		IsInDialog(_Char, 1)					//c3
+		IsEqual(%RevealOnlyInTrigger,null)		//c4
+		CharacterIsInTrigger(_Char,%RevealOnlyInTrigger)	//c5
+		GetDistance(_Dist,_Char,__Me)			//c6
+		IsLessThen(_Dist,%MinDistance)			//c7
+		CharacterIsPlayer(_Char)				//c8
+	THEN
+		Set(_AllowEvent, 1)
+		// Checking if we already rolled for that character
+		Set(_CharCount, 0)
+		IF "c1"
+			ListGetSize(%CheckedCharacters,_CharSize)
+		THEN
+			WHILE "c1&!c2"
+				IsLessThen(_CharCount,_CharSize)	
+				IsEqual(_AllowEvent, 0)
+			DO
+				Add(_CharCount, 1)
+				IF "c1&c2"
+					ListGet(%CheckedCharacters, _CharCount, _CheckedChar)
+					IsEqual(_CheckedChar, _Char)
+				THEN						
+					Set(_AllowEvent,0)
+				ENDIF					
+			ENDWHILE
+			IF "c1"
+				IsEqual(_AllowEvent, 1)
+			THEN
+				ListAdd(%CheckedCharacters, _Char)
+			ENDIF
+		ENDIF
+		
+		IF "c1"
+			IsEqual(_AllowEvent, 1)
+		THEN
+			SetVar(__Me,"CheckAdvantage_Character",_Char)
+			SetVar(__Me,"CheckAdvantage_Result",INT:0)
+			CallFunction("PUZZLE_HiddenPerception_CheckAdvantage")
+			DebugText(__Me,"Advantage: [1]",%CheckAdvantage_Result)
+			
+			Set(_Skill, "Perception")
+			Set(_Event, "GLO_HiddenItemCheck")		
+			IF "c1"
+				IsEqual(%IsInvestigation, 1)
+			THEN
+				Set(_Skill, "Investigation")
+				Set(_Event, "GLO_HiddenInvestigationItemCheck")
+			ENDIF
+			
+			Set(_DCadjusted,%DC)
+			IF "c1"
+				IsEqual(%CheckAdvantage_Result,-2)
+			THEN
+				Set(_DCadjusted,50)
+				Set(%CheckAdvantage_Result,0)
+			ELIF "c1"
+				IsEqual(%CheckAdvantage_Result,2)
+			THEN
+				Set(_DCadjusted,0)
+				Set(%CheckAdvantage_Result,0)
+			ENDIF
+			DebugText(__Me,"DCadjusted: [1]",_DCadjusted)
+			DebugText(__Me,"Advantage: [1]",%CheckAdvantage_Result)
+			RequestPassiveRoll(_Char,__Me,"SkillCheck",_Skill,_DCadjusted,%CheckAdvantage_Result,_Event)
+		ENDIF
+	ENDIF
+	
+EVENT StoryReveal
+ON
+	OnFunction("Reveal")
+ACTIONS
+	Set(%CurrentIsVisible,1)
+	Set(%TimerStopped,1)
+	StopTimer("UpdateHidden")
+	ItemSetDiscoveredTrap(__Me,1)
+	IF "c1"
+		IsEqual(%EffectHandle,null)
+	THEN
+		ItemPlayLoopEffect(%EffectHandle,__Me, "VFX_Script_Trap_Overlay_Red_01")
+	ENDIF
+
+EVENT StoryCancel
+ON
+	OnItemEvent(__Me,"StoryCancel")
+ACTIONS
+	DebugText(__Me, "Cancel me")
+    SetVar(__Me, "TimerStopped", INT:1)
+    StopTimer("UpdateHidden")
+	StartTimer("StopLoopingEffect", 0.0, 0)
+
+EVENT RevealFromStoryScript
+ON
+	OnItemEvent(__Me,"RevealFromStory")
+	OnItemEvent(__Me,"StoryReveal")
+ACTIONS
+	CallFunction("Reveal")
+
+EVENT Disarm
+ON
+	OnItemDisarmEvent(__Me, _, _, 1)
+	OnCharacterItemEvent(_, __Me, "Disarm")
+	OnItemItemEvent(_, __Me, "Disarm")
+ACTIONS
+	ItemSetArmedTrap(__Me, 0)
+	IF "c1"
+		IsEqual(%CurrentIsVisible,0)
+	THEN
+		CallFunction("Reveal")
+	ENDIF
+	CallFunction("ClearEffect")
+
+EVENT OnDestroying
+ON
+	OnItemDestroying(__Me)
+ACTIONS
+	CallFunction("ClearEffect")	
+	
+EVENT PickupEvent
+ON
+	OnPickupItem(_,__Me)
+ACTIONS
+	CallFunction("ClearEffect")
+	
+EVENT DropEvent
+ON
+	OnItemDropped(__Me,_)
+ACTIONS
+	IF "c1&c2&c3"
+		IsEqual(%EffectHandle,null)
+		IsEqual(%CurrentIsVisible,1)
+		ItemIsArmedTrap(__Me)
+	THEN
+		CallFunction("Reveal")
+	ENDIF
+
+EVENT ClearEffect
+ON
+	OnFunction("ClearEffect")
+ACTIONS
+	IF "!c1"
+		IsEqual(%EffectHandle,null)
+	THEN
+		StopLoopEffect(%EffectHandle)
+		Set(%EffectHandle,null)
+	ENDIF

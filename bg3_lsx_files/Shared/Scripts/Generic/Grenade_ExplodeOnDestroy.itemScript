@@ -1,0 +1,116 @@
+INIT
+//Same as the Grenade script but instead of being destroyed at the first instance of damage, it will explode when it's hp reaches 0
+
+ITEM:__Me
+
+EXTERN SPELL:%ProjectileSpell=null
+
+CHARACTER:%Caster=null
+INT:%Exploded=0
+CHARACTER:%CharacterSource=null
+ITEM:%ContainerSource=null
+
+EVENTS
+
+EVENT GrenadeSetCaster
+VARS
+	ITEM:_ItemSource
+	CHARACTER:_CharacterCaster
+ON
+	OnCharacterItemEvent(_CharacterCaster, _ItemSource, "SetGrenadeCaster")
+ACTIONS
+	IF "c1"
+		IsEqual(__Me, _ItemSource)
+	THEN
+		Set(%Caster, _CharacterCaster)
+	ENDIF
+	
+EVENT GrenadeDestroyFromStory_Character
+VARS
+	ITEM:_ItemSource
+	CHARACTER:_CharacterSource
+ON
+	OnCharacterItemEvent(_CharacterSource, _ItemSource, "ExplodeGrenade")
+ACTIONS
+	IF "c1"
+		IsEqual(__Me, _ItemSource)
+	THEN
+		Set(%CharacterSource, _CharacterSource)
+		CallFunction("Grenade_Explode")
+	ENDIF
+
+EVENT GrenadeDestroyFromStory_Container
+VARS
+	ITEM:_ItemSource
+	ITEM:_ContainerSource
+ON
+	OnItemItemEvent(_ContainerSource, _ItemSource, "ExplodeGrenade")
+ACTIONS
+	IF "c1"
+		IsEqual(__Me, _ItemSource)
+	THEN
+		Set(%ContainerSource, _ContainerSource)
+		CallFunction("Grenade_Explode")
+	ENDIF
+
+EVENT GrenadeDestroy
+ON
+	OnItemDestroying(__Me)
+ACTIONS
+		CallFunction("Grenade_Explode")
+	
+EVENT FetchSpellOnDamage
+ON
+	FetchItemSpellOnDamage(_,_)
+ACTIONS
+	IF "!c1"
+		IsEqual(%Exploded, 1)
+	THEN
+		RETURN(1, %ProjectileSpell, 0)
+	ENDIF
+	RETURN(0, %ProjectileSpell, 0)
+
+EVENT Grenade_Explode
+VARS
+	FLOAT3:_Position
+ON
+	OnFunction("Grenade_Explode")
+ACTIONS
+	IF "!c1&c2&!c3" // Check if grenade is in inventory (item container)
+		IsEqual(%Exploded,1)
+		ItemIsInInventory(__Me)
+		IsEqual(%ContainerSource, null)
+	THEN
+		ExplodeAt(%ContainerSource, %ProjectileSpell, 0, %Caster)
+		Set(%Exploded,1)
+		ItemDestroy(__Me)
+	ELIF "!c1&c2&!c3" // Check if grenade is in inventory (character)
+		IsEqual(%Exploded,1)
+		ItemIsInInventory(__Me)
+		IsEqual(%CharacterSource, null)
+	THEN
+		ExplodeAt(%CharacterSource, %ProjectileSpell, 0, %Caster)
+		Set(%Exploded,1)
+		ItemDestroy(__Me)
+	ELIF "!c1" // If not in inventory, explode as normal
+		IsEqual(%Exploded,1)
+	THEN
+		ExplodeAt(__Me,%ProjectileSpell, 0,%Caster)
+		Set(%Exploded,1)
+		ItemDestroy(__Me)
+	ENDIF
+EVENT GrenadeAttacked
+VARS
+	ITEM:_ItemSource
+	CHARACTER:_CharacterSource
+	DAMAGE:_DamageType
+ON
+	OnDamage(_DamageType,_,_CharacterSource,_ItemSource)
+ACTIONS
+	IF "!c1&!c2"
+		IsEqual(__Me,_ItemSource)
+		IsEqual(_DamageType, None)
+	THEN
+		Set(%Caster, _CharacterSource)
+		Set(%CharacterSource, _CharacterSource)
+	ENDIF

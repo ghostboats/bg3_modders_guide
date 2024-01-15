@@ -1,0 +1,129 @@
+#INCLUDE Generic/PUZZLE_Disarm
+
+INIT
+ITEM:__Me
+EXTERN SPELL:%TurretProjectileSpell = Projectile_Fireball_Trap
+EXTERN FLOAT3:%TurretOffset = {0;0;0}
+EXTERN STRING:%TurretEventOn = null
+EXTERN STRING:%TurretEventOff = null
+EXTERN INT:%TurretIsOn = 1
+EXTERN FLOAT:%TurretSleepTime = 1
+EXTERN FLOAT:%TurretDelayTime = 0
+EXTERN FLOAT:%TurretIntervalRandomness = 0
+FLOAT:%TurretSavedDelayTime = 0
+FLOAT:%TurretDisarmed = 0
+
+EVENTS
+
+EVENT TurretDisarm
+VARS
+CHARACTER:_Char
+ON
+	OnItemDisarmEvent(__Me, _Char, _, 1)
+ACTIONS
+	Set(%TurretDisarmed, 1)
+	CharacterItemEvent(_Char, __Me, %TurretEventOff)
+
+EVENT Turret_TurnOff
+ON
+	OnCharacterItemEvent(_,_,%TurretEventOff)
+ACTIONS
+	Set(%TurretIsOn,0)
+	Interrupt("Turret_Shoot")
+
+EVENT Turret_TurnOn
+ON
+	OnCharacterItemEvent(_,_,%TurretEventOn)
+ACTIONS
+	IF "c1"
+		IsEqual(%TurretDisarmed,0)
+	THEN
+		IF "!c1"
+			IsEqual(%TurretSavedDelayTime,0)
+		THEN
+			Set(%TurretDelayTime,%TurretSavedDelayTime)
+		ENDIF
+		
+		Set(%TurretIsOn,1)
+		Interrupt("Turret_Shoot")
+	ENDIF
+	
+EVENT CombatTick
+ON
+	OnCombatTick()
+ACTIONS
+	IF "c1"
+		IsEqual(%TurretIsOn,1)
+	THEN
+		SetPriority(Turret_Combat, 1000)
+	ENDIF
+	
+EVENT FailedDisarm
+ON
+	OnItemDisarmEvent(__Me, _, _, 0)
+ACTIONS
+	Set(%TurretIsOn,1)
+	Interrupt("Turret_Shoot")
+
+BEHAVIOUR 
+REACTION Turret_Combat, 0
+USAGE WAITING
+VARS 
+	FLOAT3:_Dir
+ACTIONS
+	IF "!c1"
+		IsEqual(%TurretDelayTime,0)
+	THEN
+		Sleep(%TurretDelayTime)
+		Set(%TurretSavedDelayTime,%TurretDelayTime)
+		Set(%TurretDelayTime,0)
+	ELSE
+		Sleep(0.5)
+	ENDIF
+	IF "c1"
+		IsEqual(%TurretIsOn,1)
+	THEN
+		GetForwardDirection(__Me,_Dir)
+		ShootLocalProjectile(%TurretProjectileSpell,__Me,%TurretOffset,_Dir)
+	ENDIF
+	Sleep(0.5)
+	SetPriority(Turret_Combat, 0)
+	
+REACTION Turret_Shoot,1000
+USAGE PEACE
+VARS 
+	FLOAT3:_Dir
+	FLOAT:_SleepTime
+	FLOAT:_Delta
+	FLOAT:_TimeDelta
+CHECK "c1"
+	IsEqual(%TurretIsOn,1)
+ACTIONS
+	Check()
+	IF "!c1"
+		IsEqual(%TurretDelayTime,0)
+	THEN
+		Sleep(%TurretDelayTime)
+		Set(%TurretSavedDelayTime,%TurretDelayTime)
+		Set(%TurretDelayTime,0)
+	ENDIF
+	GetForwardDirection(__Me,_Dir)
+	ShootLocalProjectile(%TurretProjectileSpell,__Me,%TurretOffset,_Dir)
+	Set(_SleepTime,%TurretSleepTime)
+		IF "c1&!c2"
+		IsGreaterThen(%TurretIntervalRandomness, 0.0)
+		IsGreaterThen(%TurretIntervalRandomness, 1.0)
+	THEN
+		GetRandomBetween(_TimeDelta,0.0,%TurretIntervalRandomness)
+		IF "c1"
+			IsRandom(0.5)
+		THEN
+			Add(_SleepTime,_TimeDelta)
+		ELSE
+			Subtract(_SleepTime,_TimeDelta)
+		ENDIF
+	ENDIF
+	Sleep(_SleepTime)
+INTERRUPT
+ACTIONS
+	Reset()

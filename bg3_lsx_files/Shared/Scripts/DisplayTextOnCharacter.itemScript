@@ -1,0 +1,23 @@
+INIT
+	ITEM:__Me
+	EXTERN FIXEDSTRING:%DialogKey = ""
+
+EVENTS
+
+EVENT OnClick
+	VARS
+		CHARACTER:_Source
+	ON
+		OnUseItem(_Source,__Me)
+	ACTIONS
+		IF "!c1&!c2&!c3"
+			CharacterIsSummon(_Source)
+			CharacterIsInteractionDisabled(_Source)
+			CharacterIsPartyFollower(_Source)
+		THEN
+			IF "!c1"
+				IsEqual(%DialogKey,"")
+			THEN
+				DialogStart(_, %DialogKey, _Source)
+			ENDIF
+		ENDIF

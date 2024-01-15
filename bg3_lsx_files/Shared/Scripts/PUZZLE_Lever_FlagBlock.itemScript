@@ -1,0 +1,38 @@
+#INCLUDE PUZZLE_Lever
+
+
+INIT
+	USING SHARED PUZZLE_Lever
+	ITEM:__Me
+	EXTERN FIXEDSTRING:%Flag="GLO_Lever_State_Blocked"
+
+
+EVENTS
+EVENT LeverUse OVERRIDE
+VARS
+	CHARACTER:_Char
+ON
+	OnUseItem(_Char,__Me)
+	OnCharacterItemEvent(_Char, __Me, "GLO_HitByAttack")
+ACTIONS
+	IF "c1&!c2"
+		IsEqual(%CurrentState,%WantedState)
+		ItemIsLocked(__Me)
+	THEN
+		IF "c1"
+			HasFlag(__Me, %Flag)
+		THEN
+			IF "!c1"
+				IsEqual(_Char, null)
+			THEN
+				DialogStart(_, "GEN_AD_ItemBlocked_a4eb2e7b-809a-a9e4-94da-955a8ac9b8c6", _Char)
+			ENDIF
+		ELSE
+			IF "c1"
+				IsEqual(%UsedBy,null)
+			THEN
+				Set(%UsedBy,_Char)
+			ENDIF
+				SetPriority("GoOn",10)
+			ENDIF
+	ENDIF

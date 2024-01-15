@@ -1,0 +1,113 @@
+#INCLUDE Mine
+/*
+* PUZZLE_Mine.itemScript #includes Mine.itemScript
+* Fires "Mine" event if total weight of objects on it exceeds %MaxWeight.
+* On "Mine" event or on any non-zero damage calls ExplodeAt with %MineProjectile projectile and %MineLevel caster level.
+*/
+
+INIT
+	USING Mine
+	ITEM:__Me
+	EXTERN STRING:%EventOnActivate=null
+	EXTERN INT:%Bool_PlaySound=1
+	EXTERN INT:%Bool_UseProjectile=1
+	EXTERN SPELL:%MineProjectile=Projectile_Fireball_Trap
+	
+	INT:%Bool_Disarmed=0
+	INT:%Bool_Deactivated=0
+
+EVENTS
+
+EVENT PlateChange
+ON
+	OnItemEvent(__Me,"MineChange")
+ACTIONS
+	IF "c1"
+		IsEqual(%CurrentPercentage,1)
+	THEN
+		ItemEvent(__Me,"Mine")
+	ENDIF
+	
+EVENT MineEvent
+VARS
+	CHARACTER:_Character
+	ITEM:_Item
+	INT:_DamagePercentage
+	CHARACTER:_Disarmer
+ON
+	OnItemEvent(__Me,"Mine")
+	OnDamage(_,_DamagePercentage,_Character,_Item)
+	OnItemDisarmEvent(__Me, _Disarmer, _, 0)
+ACTIONS
+	IF "c5&c6&((c1&c2)|!c3|!c4)"
+		IsEqual(_Character,null)
+		IsEqual(_Item,null)
+		IsEqual(_Disarmer,null)
+		IsEqual(_DamagePercentage,0)
+		IsEqual(%Bool_Disarmed, 0)
+		IsEqual(%Bool_Deactivated,0)
+	THEN
+		IF "!c1"
+			IsEqual(%EventOnActivate,null)
+		THEN
+			IF "!c1"
+				IsEqual(_Character,null)			
+			THEN
+				CharacterItemEvent(_Character,__Me,%EventOnActivate)									
+			ELSE
+				IF "!c1"
+					IsEqual(_Disarmer,null)	
+				THEN
+					CharacterItemEvent(_Disarmer,__Me,%EventOnActivate)
+				ELSE
+					CharacterItemEvent(null,__Me,%EventOnActivate)
+				ENDIF
+			ENDIF		
+		ENDIF
+		
+		IF "c1"
+			IsEqual(%Bool_UseProjectile,1)
+		THEN
+			IF "!c1"
+				IsEqual(_Character,null)
+			THEN
+				ExplodeAt(__Me,%MineProjectile,0,_Character)				
+			ELSE
+				IF "!c1"
+					IsEqual(_Disarmer,null)	
+				THEN
+					ExplodeAt(__Me,%MineProjectile,0,_Disarmer)
+				ELSE
+					ExplodeAt(__Me,%MineProjectile,0,__Me)
+				ENDIF				
+			ENDIF
+		ENDIF
+		
+		ItemDie(__Me)
+	ENDIF
+		
+EVENT Destroying
+ON
+	OnItemDestroying(__Me)
+ACTIONS	
+	IF "c1&c2&c3"
+		IsEqual(%Bool_PlaySound,1)
+		IsEqual(%Bool_Disarmed, 0)
+		IsEqual(%Bool_Deactivated,0)
+	THEN
+		PlaySound(__Me,"II_Wired_Snare_Trap")
+	ENDIF
+	ItemEvent(__Me,"StoryReveal")
+	Set(%Bool_Deactivated, 1)
+	
+EVENT Disarm
+ON
+	OnItemDisarmEvent(__Me, _, _, 1)
+ACTIONS
+	IF "c1&c2"
+		IsEqual(%Bool_Deactivated,0)
+		IsEqual(%Bool_Disarmed, 0)
+	THEN	
+		Set(%Bool_Disarmed,1)
+		ItemDestroy(__Me)
+	ENDIF

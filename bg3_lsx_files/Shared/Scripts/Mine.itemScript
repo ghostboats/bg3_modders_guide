@@ -1,0 +1,94 @@
+#INCLUDE DisplayTextOnCharacter
+/*
+* Mine.itemScript
+* Starts a timer "UpdateMine"; with every tick summs total weight of object above the mine.
+* Counts percentage of %MaxWeight, fires "MineChange" event on percentage change.
+*/
+
+INIT
+	USING SHARED DisplayTextOnCharacter
+	EXTERN FIXEDSTRING:%DialogKey = "GEN_AD_DisarmTrap"
+	ITEM:__Me
+	EXTERN FLOAT:%MaxWeight=50
+
+	FLOAT:%CurrentPercentage=0
+	FLOAT:%PreviousPercentage=0
+	FLOAT:%NewWeight=0
+
+EVENTS
+
+EVENT Initialize
+ON
+	OnInit()
+ACTIONS
+	IF "!c1"
+		ItemIsDestroyed(__Me)
+	THEN
+		StartTimer("UpdateMine",0.1,-1)
+	ENDIF
+
+EVENT Shutdown
+ON
+	OnShutdown()
+	OnItemDestroying(__Me)
+ACTIONS
+	StopTimer("UpdateMine")
+
+
+EVENT Update
+VARS
+	FLOAT:_PreviousWeight
+ON
+	OnTimer("UpdateMine")
+ACTIONS
+	IF "!c1"
+		ItemIsMoving(__Me)
+	THEN
+		Set(%NewWeight,0)
+		IterateCharactersOnObject(__Me,"MineCheck")
+		IterateItemsOnObject(__Me,"MineCheck")
+		Set(%PreviousPercentage,%CurrentPercentage)
+		Set(%CurrentPercentage,%NewWeight)
+		Divide(%CurrentPercentage,%MaxWeight)
+		Clamp(%CurrentPercentage,0,1)
+		IF "!c1"
+			IsEqual(%CurrentPercentage,%PreviousPercentage)
+		THEN
+			ItemEvent(__Me,"MineChange")
+		ENDIF
+	ENDIF
+
+EVENT WeightCalcChar
+VARS
+CHARACTER:_Char
+FLOAT:_Weight
+ON
+	OnIterateCharacter(_Char,"MineCheck")
+ACTIONS
+	IF "(!c1&c2&!c3&!c4)"
+		// For _Char not null: has weight, not floating, not dead, not avoiding the visible trap
+		IsEqual(_Char,null)
+		CharacterGetStat(_Weight,_Char,Weight)
+		CharacterIsIgnoringGroundSurface(_Char)
+		CharacterIsDead(_Char)
+	THEN
+		Add(%NewWeight,_Weight)
+	ENDIF
+
+EVENT WeightCalcItem
+VARS
+ITEM:_Item
+FLOAT:_Weight
+ON
+	OnIterateItem(_Item,"MineCheck")
+ACTIONS
+	IF "(!c1&!c2&!c3&c4&!c5)"
+		// For _Item not null: not moving, not destroyed, has weight, not falling
+		IsEqual(_Item,null)
+		ItemIsMoving(_Item)
+		ItemIsDestroyed(_Item)
+		ItemGetStat(_Weight,_Item,Weight)
+		ItemIsFalling(_Item)
+	THEN
+		Add(%NewWeight,_Weight)
+	ENDIF

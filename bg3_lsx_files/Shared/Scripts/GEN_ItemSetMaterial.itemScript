@@ -1,0 +1,44 @@
+INIT
+
+	ITEM:__Me
+	EXTERN INT:%OnInit=1
+	EXTERN FIXEDSTRING:%Material="029a96b8-fba1-43b9-bbf2-be95102530e6"
+	EXTERN STRING:%ItemEvent=null
+	EXTERN INT:%Duration=-1
+	EXTERN INT:%Overlay=0
+	INT:%AppliedMaterial = 0
+
+EVENTS
+
+EVENT SetMaterial_Init
+ON
+	OnInit()
+ACTIONS
+	IF "c1&c2"
+		IsEqual(%OnInit,1)
+		IsEqual(%AppliedMaterial,0)
+	THEN
+		IF "c1"
+			IsEqual(%Overlay,1)
+		THEN
+			SetMaterial(__Me,%Material,%Duration,1,1,1,1,1,1,1,1,0)
+		ELSE
+			SetMaterial(__Me,%Material,%Duration,1,1,1,1,1,1,1)
+		ENDIF
+		Set(%AppliedMaterial,1)
+	ENDIF
+	
+EVENT OnEvent
+ON
+	OnItemEvent(__Me,%ItemEvent)
+	OnCharacterItemEvent(_,_,%ItemEvent)
+ACTIONS
+	IF "c1"
+		IsEqual(%Overlay,1)
+	THEN
+		SetMaterial(__Me,%Material,%Duration,1,1,1,1,1,1,1,1,0)
+	ELSE
+		SetMaterial(__Me,%Material,%Duration,1,1,1,1,1,1,1)
+	ENDIF
+
+

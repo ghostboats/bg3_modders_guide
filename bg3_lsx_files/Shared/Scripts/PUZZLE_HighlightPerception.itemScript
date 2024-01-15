@@ -1,0 +1,184 @@
+INIT
+	ITEM:__Me
+	INT: %TimerStopped = 0
+	FLOAT: %HighlightTimer = 18
+	EXTERN FLOAT: %DetectDistance = 10
+	EXTERN INT: %DC = 10
+	EXTERN INT:%IsInvestigation = 0
+	EXTERN TRIGGER:%RevealOnlyInTrigger = null
+	STRING: %AppearEffect = "VFX_Script_Perception_Default_01"
+	STRING: %AppearEffectTrap = "VFX_Script_Perception_Danger_01"
+	INT64: %EffectHandle = null
+	LIST<CHARACTER>: %CheckedCharacters
+	CHARACTER: %CheckAdvantage_Character = null
+	INT: %CheckAdvantage_Result = 0
+
+EVENTS
+
+EVENT InitializeHidden
+ON
+	OnInit()
+ACTIONS	
+	StartTimer("UpdateHidden",0.2,-1)	
+
+EVENT ShutdownHidden
+ON
+	OnShutdown()
+	OnItemDestroying(__Me)
+ACTIONS
+	StopTimer("UpdateHidden")
+
+EVENT UpdateHidden
+ON
+	OnTimer("UpdateHidden")
+ACTIONS
+	IterateParty("HiddenObjectCheck")
+
+EVENT CheckHidden
+VARS
+	CHARACTER: _Char
+	FLOAT:     _Dist
+	INT: 	   _AllowEvent
+	INT: 	   _CharCount
+	INT: 	   _CharSize
+	CHARACTER: _CheckedChar
+	STRING:    _Skill
+	INT:       _DCadjusted
+	STRING:    _Event
+ON
+	OnIterateCharacter(_Char, "HiddenObjectCheck")
+ACTIONS
+	IF "c1&!c2&!c3&c4&c5&c6&(c7|c8)" 
+		IsEqual(%TimerStopped, 0)				//c1
+		CharacterIsDead(_Char)					//c2
+		IsInDialog(_Char, 1)					//c3
+		GetDistance(_Dist, _Char, __Me)			//c4
+		IsLessThen(_Dist, %DetectDistance)		//c5
+		CharacterIsPlayer(_Char)				//c6
+		IsEqual(%RevealOnlyInTrigger,null)		//c7
+		CharacterIsInTrigger(_Char,%RevealOnlyInTrigger)	//c8
+	THEN
+		Set(_AllowEvent, 1)
+		// Checking if we already rolled for that character
+		Set(_CharCount, 0)	
+		IF "c1"
+			ListGetSize(%CheckedCharacters,_CharSize)
+		THEN
+			WHILE "c1&!c2"
+				IsLessThen(_CharCount,_CharSize)	
+				IsEqual(_AllowEvent, 0)
+			DO
+				Add(_CharCount, 1)
+				IF "c1&c2"
+					ListGet(%CheckedCharacters, _CharCount, _CheckedChar)
+					IsEqual(_CheckedChar, _Char)
+				THEN						
+					Set(_AllowEvent,0)
+				ENDIF					
+			ENDWHILE
+			IF "c1"
+				IsEqual(_AllowEvent, 1)
+			THEN
+				ListAdd(%CheckedCharacters, _Char)
+			ENDIF
+		ENDIF
+		
+		IF "c1"
+			IsEqual(_AllowEvent, 1)
+		THEN
+			SetVar(__Me,"CheckAdvantage_Character",_Char)
+			SetVar(__Me,"CheckAdvantage_Result",INT:0)
+			CallFunction("PUZZLE_HiddenPerception_CheckAdvantage")
+			//DebugText(__Me,"Advantage: [1]",%CheckAdvantage_Result)
+			
+			Set(_Skill, "Perception")
+			Set(_Event, "GLO_HiddenItemCheck")
+			IF "c1"
+				IsEqual(%IsInvestigation, 1)
+			THEN
+				Set(_Skill, "Investigation")
+				Set(_Event, "GLO_HiddenInvestigationItemCheck")
+			ENDIF
+			
+			Set(_DCadjusted,%DC)
+			IF "c1"
+				IsEqual(%CheckAdvantage_Result,-2)
+			THEN
+				Set(_DCadjusted,50)
+				Set(%CheckAdvantage_Result,0)
+			ELIF "c1"
+				IsEqual(%CheckAdvantage_Result,2)
+			THEN
+				Set(_DCadjusted,0)
+				Set(%CheckAdvantage_Result,0)
+			ENDIF
+			//DebugText(__Me,"DCadjusted: [1]",_DCadjusted)
+			//DebugText(__Me,"Advantage: [1]",%CheckAdvantage_Result)
+			
+			RequestPassiveRoll(_Char,__Me,"SkillCheck",_Skill,_DCadjusted,%CheckAdvantage_Result,_Event)
+		ENDIF
+	ENDIF
+	
+EVENT StoryReveal
+ON
+	OnItemEvent(__Me,"StoryReveal")
+ACTIONS
+	Set(%TimerStopped,1)
+	StopTimer("UpdateHidden")
+	StartTimer("StopLoopingEffect",%HighlightTimer,0)
+	
+	IF "c1"
+		IsEqual(%EffectHandle,null)
+	THEN
+		IF "c1"
+			ItemIsTrap(__Me)
+		THEN
+			ItemPlayLoopEffect(%EffectHandle,__Me, %AppearEffectTrap)
+		ELSE
+			ItemPlayLoopEffect(%EffectHandle,__Me, %AppearEffect)
+		ENDIF
+	ENDIF
+
+EVENT StoryCancel
+ON
+	OnItemEvent(__Me,"StoryCancel")
+ACTIONS
+	DebugText(__Me, "Cancel me")
+    SetVar(__Me, "TimerStopped", INT:1)
+    StopTimer("UpdateHidden")
+	StartTimer("StopLoopingEffect", 0.0, 0)
+
+EVENT StopLoopingEffectTimer
+ON
+	OnTimer("StopLoopingEffect")
+ACTIONS
+	IF "!c1"
+		IsEqual(%EffectHandle,null)
+	THEN
+		StopLoopEffect(%EffectHandle)
+		Set(%EffectHandle,null)
+	ENDIF
+
+EVENT RevealFromStoryScript
+ON
+	OnItemEvent(__Me,"RevealFromStory")
+ACTIONS
+	ItemEvent(__Me,"StoryReveal")
+
+EVENT StopRevealFromStoryVFX
+ON
+	OnItemEvent(__Me,"StopRevealFromStory")
+ACTIONS
+	IF "!c1"
+		IsEqual(%EffectHandle,null)
+	THEN
+		StopLoopEffect(%EffectHandle)
+		Set(%EffectHandle,null)
+	ENDIF
+
+EVENT StopHighlightOnUse
+ON
+	OnUseItem(_,__Me)
+	OnItemDestroying(__Me)
+ACTIONS
+	StartTimer("StopLoopingEffect",0.1,0)
