@@ -5,7 +5,7 @@ import pyautogui
 import time
 import pygetwindow as gw
 import keyboard
-
+QUICK_LAUNCH = True
 SS = r'C:\\Users\\vishal\\Desktop\\git repos\\bg3_modders_guide\\screenshots\\'
 #to make exe run this in the same dir as bg3_modders_guide
 #C:\Users\vishal\AppData\Roaming\Python\Python312\Scripts\pyinstaller.exe --onefile --add-data "C:\Users\vishal\Desktop\bg3_mods\*.png;bg3_mods" pull_and_launch.py
@@ -103,6 +103,8 @@ def launch_bg3_modders_multitool():
     multitool_path = r"C:\Users\vishal\Desktop\bg3_mods\bg3-modders-multitool\bg3-modders-multitool.exe"
     multitool_process = subprocess.Popen([multitool_path])
     find_image_on_screen(SS + 'rebuild.png', click=1)
+    if QUICK_LAUNCH == True:
+        find_image_on_screen(SS + 'launch_game.png', click=1)
     return multitool_process
 
 def launch_bg3_mod_manager():
@@ -142,6 +144,9 @@ def interact_with_game():
         time.sleep(0.5)
     time.sleep(6)
     keyboard.press_and_release('esc')
+    skip_intro()
+
+def skip_intro():
     in_game_path = SS + 'in_game_button.png'
     in_game_button = None
     while in_game_button is None:
@@ -172,16 +177,21 @@ if __name__ == "__main__":
         if not os.path.exists(mods_dir):
             print('no dir found')
             quit()
-        pack_mod(os.path.abspath(__file__), divine_path, mod_folder)
+        if QUICK_LAUNCH == True:
+            modders_multitool_process = launch_bg3_modders_multitool()
+            skip_intro()
 
-        modders_multitool_process = launch_bg3_modders_multitool()
-        time.sleep(0.5)
-        mod_manager_process = launch_bg3_mod_manager()
-        interact_with_game()
-        if modders_multitool_process:
-            modders_multitool_process.terminate()
-        if mod_manager_process:
-            mod_manager_process.terminate()
+        else:
+            pack_mod(os.path.abspath(__file__), divine_path, mod_folder)
+
+            modders_multitool_process = launch_bg3_modders_multitool()
+            time.sleep(0.5)
+            mod_manager_process = launch_bg3_mod_manager()
+            interact_with_game()
+            if modders_multitool_process:
+                modders_multitool_process.terminate()
+            if mod_manager_process:
+                mod_manager_process.terminate()
         
         end_time = time.time()
         elapsed_time = end_time - start_time
