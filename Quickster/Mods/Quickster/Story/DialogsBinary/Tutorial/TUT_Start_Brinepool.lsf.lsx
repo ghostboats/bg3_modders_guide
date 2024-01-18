@@ -349,6 +349,55 @@
 								</node>
 							</children>
 						</node>
+
+						<node id="node">
+							<attribute id="constructor" type="FixedString" value="TagQuestion" />
+							<attribute id="UUID" type="FixedString" value="3c243807-5db3-4172-93a0-0dad00d710f5" />
+							<attribute id="endnode" type="bool" value="True" />
+							<attribute id="ShowOnce" type="bool" value="True" />
+							<attribute id="speaker" type="int32" value="1" />
+							<children>
+								<node id="children" />
+								<node id="GameData">
+									<children>
+										<node id="AiPersonalities" />
+										<node id="MusicInstrumentSounds" />
+										<node id="OriginSound" />
+									</children>
+								</node>
+								<node id="Tags" />
+								<node id="setflags" />
+								<node id="checkflags" />
+								<node id="TaggedTexts">
+									<children>
+										<node id="TaggedText">
+											<attribute id="HasTagRule" type="bool" value="True" />
+											<children>
+												<node id="TagTexts">
+													<children>
+														<node id="TagText">
+															<attribute id="TagText" type="TranslatedString" handle="h0bdd2c29g6190g4cbdg8cfbg6f4c8478ddce" version="2" />
+															<attribute id="LineId" type="guid" value="0ce0944b-6d98-40d5-9737-17596b0519e6" />
+															<attribute id="stub" type="bool" value="True" />
+														</node>
+													</children>
+												</node>
+												<node id="RuleGroup">
+													<attribute id="TagCombineOp" type="uint8" value="0" />
+													<children>
+														<node id="Rules" />
+													</children>
+												</node>
+											</children>
+										</node>
+									</children>
+								</node>
+								<node id="ValidatedFlags">
+									<attribute id="ValidatedHasValue" type="bool" value="False" />
+								</node>
+							</children>
+						</node>
+
 						<node id="node">
 							<attribute id="constructor" type="FixedString" value="RollResult" />
 							<attribute id="UUID" type="FixedString" value="64374619-a544-4a88-8f4e-788728b9012b" />
@@ -431,6 +480,9 @@
 										</node>
 										<node id="child">
 											<attribute id="UUID" type="FixedString" value="3f3404b2-43db-42c2-8dea-f75620f3d7dd" />
+										</node>
+										<node id="child">
+											<attribute id="UUID" type="FixedString" value="3c243807-5db3-4172-93a0-0dad00d710f5" />
 										</node>
 										<node id="child">
 											<attribute id="UUID" type="FixedString" value="4bdcaf48-faad-4cd9-befa-19a771205b1d" />
