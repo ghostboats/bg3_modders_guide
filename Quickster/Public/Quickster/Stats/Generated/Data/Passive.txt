@@ -25,7 +25,6 @@ data "Conditions" "(context.HasContextFlag(StatsFunctorContext.OnCast) and Extra
 data "StatsFunctors" "IF(context.HasContextFlag(StatsFunctorContext.OnCast)):ApplyStatus(SELF,EXTRA_ATTACK_Q,100,1);IF(context.HasContextFlag(StatsFunctorContext.OnStatusRemoved)):ApplyStatus(EXTRA_ATTACK_Q,100,1);IF(context.HasContextFlag(StatsFunctorContext.OnStatusApplied) and not HasHigherPriorityExtraAttackQueued('EXTRA_ATTACK_Q') and not HasAnyExtraAttack()):ApplyStatus(EXTRA_ATTACK, 100, 1)"
 
 
-
 new entry "OLD_Quickster_Zoomies"
 type "PassiveData"
 data "DisplayName" "h98458680g0b0bg4587gba79gf61b63e67e73"
