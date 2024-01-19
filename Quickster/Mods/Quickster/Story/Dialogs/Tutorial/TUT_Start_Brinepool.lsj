@@ -1003,7 +1003,26 @@
                                     "HasTagRule" : {"type" : "bool", "value" : true},
                                     "RuleGroup" : [
                                        {
-                                          "Rules" : [ {} ],
+                                          "Rules" : [
+                                             {
+                                                "Rule" : [
+                                                   {
+                                                      "HasChildRules" : {"type" : "bool", "value" : false},
+                                                      "TagCombineOp" : {"type" : "uint8", "value" : 0},
+                                                      "Tags" : [
+                                                         {
+                                                            "Tag" : [
+                                                               {
+                                                                  "Object" : {"type" : "guid", "value" : "35add446-b710-4ad1-8dbc-36f99aecc6d5"}
+                                                               }
+                                                            ]
+                                                         }
+                                                      ],
+                                                      "speaker" : {"type" : "int32", "value" : 1}
+                                                   }
+                                                ]
+                                             }
+                                          ],
                                           "TagCombineOp" : {"type" : "uint8", "value" : 0}
                                        }
                                     ],
@@ -1026,7 +1045,7 @@
                               ]
                            }
                         ],
-                        "Tags" : [ {} ],
+                        "Tags" : [{}],
                         "UUID" : {"type" : "FixedString", "value" : "3c243807-5db3-4172-93a0-0dad00d710f5"},
                         "ValidatedFlags" : [
                            {
@@ -1034,21 +1053,7 @@
                            }
                         ],
                         "addressedspeaker" : {"type" : "int32", "value" : -1},
-                        "checkflags" : [ 
-                           {
-                              "flaggroup" : [
-                                 {
-                                    "flag" : [
-                                       {
-                                          "UUID" : {"type" : "FixedString", "value" : "35add446-b710-4ad1-8dbc-36f99aecc6d5"},
-                                          "paramval" : {"type" : "int32", "value" : 3},
-                                          "value" : {"type" : "bool", "value" : true}
-                                       }
-                                    ], "type" : {"type" : "FixedString", "value" : "Tag"}
-                                 }
-                              ]
-                           } 
-                        ],
+                        "checkflags" : [ {} ],
                         "children" : [ {} ],
                         "constructor" : {"type" : "FixedString", "value" : "TagQuestion"},
                         "editorData" : [
