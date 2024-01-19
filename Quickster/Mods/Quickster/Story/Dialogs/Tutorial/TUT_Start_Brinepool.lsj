@@ -1003,7 +1003,21 @@
                                     "HasTagRule" : {"type" : "bool", "value" : true},
                                     "RuleGroup" : [
                                        {
-                                          "Rules" : [ {} ],
+                                          "Rules" : [ 
+                                             {
+                                                "Rule" : [
+                                                   {
+                                                      "HasChildRules" : {"type" : "bool", "value" : false},
+                                                      "TagCombineOp" : {"type" : "uint8", "value" : 0},
+                                                      "Tags" : [
+                                                         {
+                                                            "Object" : {"type" : "guid", "value" : "35add446-b710-4ad1-8dbc-36f99aecc6d5"}
+                                                         }
+                                                      ]
+                                                   }
+                                                ]
+                                             } 
+                                          ],
                                           "TagCombineOp" : {"type" : "uint8", "value" : 0}
                                        }
                                     ],
