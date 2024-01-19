@@ -1003,21 +1003,7 @@
                                     "HasTagRule" : {"type" : "bool", "value" : true},
                                     "RuleGroup" : [
                                        {
-                                          "Rules" : [ 
-                                             {
-                                                "Rule" : [
-                                                   {
-                                                      "HasChildRules" : {"type" : "bool", "value" : false},
-                                                      "TagCombineOp" : {"type" : "uint8", "value" : 0},
-                                                      "Tags" : [
-                                                         {
-                                                            "Object" : {"type" : "guid", "value" : "35add446-b710-4ad1-8dbc-36f99aecc6d5"}
-                                                         }
-                                                      ]
-                                                   }
-                                                ]
-                                             } 
-                                          ],
+                                          "Rules" : [ {} ],
                                           "TagCombineOp" : {"type" : "uint8", "value" : 0}
                                        }
                                     ],
@@ -1048,7 +1034,21 @@
                            }
                         ],
                         "addressedspeaker" : {"type" : "int32", "value" : -1},
-                        "checkflags" : [ {} ],
+                        "checkflags" : [ 
+                           {
+                              "flaggroup" : [
+                                 {
+                                    "flag" : [
+                                       {
+                                       "UUID" : {"type" : "FixedString", "value" : "35add446-b710-4ad1-8dbc-36f99aecc6d5"},
+                                       "paramval" : {"type" : "int32", "value" : 4},
+                                       "value" : {"type" : "bool", "value" : false}
+                                       }
+                                    ], "type" : {"type" : "FixedString", "value" : "Tag"}
+                                 }
+                              ]
+                           } 
+                        ],
                         "children" : [ {} ],
                         "constructor" : {"type" : "FixedString", "value" : "TagQuestion"},
                         "editorData" : [
