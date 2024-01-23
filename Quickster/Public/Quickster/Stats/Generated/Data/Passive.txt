@@ -25,12 +25,10 @@ data "Conditions" "(context.HasContextFlag(StatsFunctorContext.OnCast) and Extra
 data "StatsFunctors" "IF(context.HasContextFlag(StatsFunctorContext.OnCast)):ApplyStatus(SELF,EXTRA_ATTACK_Q,100,1);IF(context.HasContextFlag(StatsFunctorContext.OnStatusRemoved)):ApplyStatus(EXTRA_ATTACK_Q,100,1);IF(context.HasContextFlag(StatsFunctorContext.OnStatusApplied) and not HasHigherPriorityExtraAttackQueued('EXTRA_ATTACK_Q') and not HasAnyExtraAttack()):ApplyStatus(EXTRA_ATTACK, 100, 1)"
 
 
-new entry "OLD_Quickster_Zoomies"
+new entry "Quickster_AGoodFit"
 type "PassiveData"
-data "DisplayName" "h98458680g0b0bg4587gba79gf61b63e67e73"
-data "Description" "haa00cdd9g7e75g403eg88a4g9a49947d4e18"
-data "Icon" "PassiveFeature_JackOfAllTrades"
-data "Properties" "Highlighted"
-data "StatFunctorsContext" "OnAttack"
-data "Conditions" "TotalDamageDoneGreaterThan(0)"
-data "StatFunctors" "JumpMaxDistanceMultiplier(199)
+data "DisplayName" "h2aa06551gd9b3g4b14g8465g0c0f75e42aae;1"
+data "Description" "h71e916e0g4049g49dbg84b6g0493001a0552;1"
+data "Icon" "PassiveFeature_Elf_WeaponTraining"
+data "Properties" "Highlighted;ForceShowInCC"
+data "Boosts" "Proficiency(LightArmor);Proficiency(SimpleWeapons)"
