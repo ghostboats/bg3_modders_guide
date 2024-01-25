@@ -1,134 +1,70 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <save>
-	<version major="4" minor="0" revision="9" build="328" lslib_meta="v1,bswap_guids" />
+	<version major="4" minor="4" revision="0" build="444" lslib_meta="v1,bswap_guids" />
 	<region id="Templates">
 		<node id="Templates">
 			<children>
-				<node id="GameObjects">
-					<attribute id="Description" type="TranslatedString" handle="h50ddf693gc834g4ce1g99d6g43cceef27ee7" version="1" />
-					<attribute id="DisplayName" type="TranslatedString" handle="hedf5ee07g6760g4627g8fd8gd72e48a296f8" version="1" />
-					<attribute id="CanBePickedUp" type="bool" value="True" />
-					<attribute id="Icon" type="FixedString" value="Item_CONT_MF_Crate_A" />
-					<attribute id="MapKey" type="FixedString" value="3c58b217-730f-4f69-b77d-5dcdff26776a" />
-					<attribute id="Name" type="LSString" value="TCP_OBJ_TutorialChest" />
-					<attribute id="ParentTemplateId" type="FixedString" value="813c005f-72ab-4806-ad7e-2e3135e41d27" />
-					<attribute id="Stats" type="FixedString" value="TCP_OBJ_TutorialChest" />
-					<attribute id="Scale" type="float" value="0.5" />
-					<attribute id="TreasureOnDestroy" type="bool" value="False" />
-					<attribute id="Type" type="FixedString" value="item" />
-					<children>
-						<node id="GameMaster" />
-						<node id="OnDestroyActions" />
-						<node id="InventoryList">
-							<children>
-								<node id="InventoryItem">
-									<attribute id="Object" type="FixedString" value="TUT_Chest_Potions" />
-								</node>
-							</children>
-						</node>
-					</children>
-				</node>
 				<node id="GameObjects">
 					<attribute id="CanClickThrough" type="bool" value="False" />
 					<attribute id="CanClimbOn" type="bool" value="False" />
 					<attribute id="CanShootThrough" type="bool" value="True" />
 					<attribute id="CoverAmount" type="uint8" value="0" />
-					<attribute id="Description" type="TranslatedString" handle="h8e75c4fagf565g4c6egbba6ge2ce2a5c5110" version="1"/>
-					<attribute id="DisplayName" type="TranslatedString" handle="h07002ffcg932dg46dega211g663163792a67" version="1"/>
-					<attribute id="Icon" type="FixedString" value="Item_CONT_MF_Crate_A" />
+					<attribute id="Description" type="TranslatedString" handle="h1f67f6f4ga18ag406dgb25fg89a2240ee15f" version="2" />
+					<attribute id="DisplayName" type="TranslatedString" handle="hc3c58cb1g2b5fg4163g8da1g774c8e8cd06d" version="2" />
+					<attribute id="EquipmentTypeID" type="guid" value="f85002a2-8e0e-4a49-aa0f-f52e987d3a3a" />
+					<attribute id="Icon" type="FixedString" value="Item_WPN_HUM_Longsword_A_0" />
 					<attribute id="IsPointerBlocker" type="bool" value="False" />
 					<attribute id="LevelName" type="FixedString" value="" />
 					<attribute id="LoopSound" type="FixedString" value="" />
-					<attribute id="MapKey" type="FixedString" value="303c20a5-9dd5-46e6-81f8-8b2461c9dba5" />
-					<attribute id="Name" type="LSString" value="" />
-					<attribute id="Opacity" type="float" value="0.5" />
-					<attribute id="ParentTemplateId" type="FixedString" value="277257bc-38f5-4c51-be13-32498e8cbd3d" />
-					<attribute id="PhysicsTemplate" type="FixedString" value="f642d5a7-1ce5-cabf-7068-eff32255df61" />
+					<attribute id="MapKey" type="FixedString" value="1c0266ff-5aed-4ed0-bfbd-69759f0d3faf" />
+					<attribute id="Name" type="LSString" value="BASE_WEAPON_Longswords" />
+					<attribute id="ParentTemplateId" type="FixedString" value="f44c9c6f-bc71-42ad-9cad-2dae306e750e" />
+					<attribute id="PhysicsTemplate" type="FixedString" value="ecd0d5ad-56ea-e93c-27e3-e77e863e6bb8" />
 					<attribute id="SoundAttenuation" type="int16" value="-1" />
 					<attribute id="SoundInitEvent" type="FixedString" value="" />
-					<attribute id="Stats" type="FixedString" value="TCP_OBJ_TutorialChestPotion" />
-					<attribute id="TreasureOnDestroy" type="bool" value="True" />
+					<attribute id="Stats" type="FixedString" value="WPN_Longsword" />
 					<attribute id="Type" type="FixedString" value="item" />
-					<attribute id="VisualTemplate" type="FixedString" value="af7b2602-9c7c-0e3c-aaff-4004536b44aa" />
+					<attribute id="VisualTemplate" type="FixedString" value="123a3ce2-538e-0a27-66d1-6cdb00ea6fde" />
 					<attribute id="Wadable" type="bool" value="False" />
 					<attribute id="WalkOn" type="bool" value="False" />
 					<attribute id="WalkThrough" type="bool" value="True" />
+					<attribute id="_OriginalFileVersion_" type="int64" value="144115200960758165" />
 					<children>
 						<node id="Bounds">
 							<children>
 								<node id="Bound">
-									<attribute id="Height" type="float" value="0.1214139" />
-									<attribute id="Max" type="fvec3" value="0.04552807 0.12201 0.04521828" />
-									<attribute id="Min" type="fvec3" value="-0.04552807 -0.1437601 -0.04583754" />
-									<attribute id="Radius" type="float" value="0.1698125" />
+									<attribute id="Height" type="float" value="0.163168" />
+									<attribute id="Max" type="fvec3" value="0.053427 0.071978 0.1393785" />
+									<attribute id="Min" type="fvec3" value="-0.053427 -0.047119 -0.487034" />
+									<attribute id="Radius" type="float" value="0.212115" />
 									<attribute id="Shape" type="uint8" value="1" />
 									<attribute id="Type" type="uint8" value="0" />
 								</node>
 								<node id="Bound">
-									<attribute id="Height" type="float" value="0.5" />
-									<attribute id="Max" type="fvec3" value="0.04552807 0.12201 0.04521828" />
-									<attribute id="Min" type="fvec3" value="-0.04552807 -0.1437601 -0.04583754" />
-									<attribute id="Radius" type="float" value="0.216506" />
+									<attribute id="Height" type="float" value="0.163168" />
+									<attribute id="Max" type="fvec3" value="0.106854 0.071978 0.278757" />
+									<attribute id="Min" type="fvec3" value="-0.106854 -0.047119 -0.974068" />
+									<attribute id="Radius" type="float" value="0.42423" />
 									<attribute id="Shape" type="uint8" value="1" />
 									<attribute id="Type" type="uint8" value="1" />
 								</node>
 								<node id="Bound">
-									<attribute id="Height" type="float" value="0.5" />
-									<attribute id="Max" type="fvec3" value="0.04552807 0.12201 0.04521828" />
-									<attribute id="Min" type="fvec3" value="-0.04552807 -0.1437601 -0.04583754" />
-									<attribute id="Radius" type="float" value="0.216506" />
+									<attribute id="Height" type="float" value="0.163168" />
+									<attribute id="Max" type="fvec3" value="0.106854 0.071978 0.278757" />
+									<attribute id="Min" type="fvec3" value="-0.106854 -0.047119 -0.974068" />
+									<attribute id="Radius" type="float" value="0.42423" />
 									<attribute id="Shape" type="uint8" value="1" />
 									<attribute id="Type" type="uint8" value="2" />
 								</node>
 							</children>
 						</node>
-						<node id="Equipment">
-							<attribute id="EquipmentSlots" type="uint32" value="0" />
-							<attribute id="VisualSetSlot" type="uint32" value="0" />
+						<node id="Tags">
 							<children>
-								<node id="LongHair" />
-								<node id="ParentRace" />
-								<node id="ShortHair" />
-								<node id="Visuals" />
-							</children>
-						</node>
-						<node id="GameMaster" />
-						<node id="InventoryList" />
-						<node id="OnUsePeaceActions">
-							<children>
-								<node id="Action">
-									<attribute id="ActionType" type="int32" value="7" />
-									<children>
-										<node id="Attributes">
-											<attribute id="Animation" type="FixedString" value="" />
-											<attribute id="Consume" type="bool" value="True" />
-											<attribute id="StatsId" type="FixedString" value="TCP_BOOST_DRANKPOTION" />
-											<attribute id="StatusDuration" type="int32" value="-1" />
-										</node>
-									</children>
+								<node id="Tag">
+									<attribute id="Object" type="guid" value="ef13fc1c-dd55-4167-ab82-88059e5798f3" />
 								</node>
-							</children>
-						</node>
-						<node id="Scripts">
-							<children>
-								<node id="Script">
-									<attribute id="UUID" type="FixedString" value="06da6f9a-e36e-41b5-a76f-f98cd3b5ae06"/>
-									<children>
-										<node id="Parameters">
-											<children>
-												<node id="Parameter">
-													<attribute id="MapKey" type="FixedString" value="HardcoreOnly" />
-													<attribute id="Type" type="int32" value="1" />
-													<attribute id="Value" type="LSString" value="0" />
-												</node>
-												<node id="Parameter">
-													<attribute id="MapKey" type="FixedString" value="LifeTime" />
-													<attribute id="Type" type="int32" value="2" />
-													<attribute id="Value" type="LSString" value="0" />
-												</node>
-											</children>
-										</node>
-									</children>
+								<node id="Tag">
+									<attribute id="Object" type="guid" value="96a99a42-ec5d-4081-9d62-c9e3f0057136" />
 								</node>
 							</children>
 						</node>
