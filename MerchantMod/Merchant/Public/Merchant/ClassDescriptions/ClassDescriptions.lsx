@@ -8,18 +8,19 @@
         <node id="ClassDescription">
           <attribute id="BaseHp" type="int32" value="6" />
           <attribute id="CharacterCreationPose" type="guid" value="0f07ec6e-4ef0-434e-9a51-1353260ccff8"/>
+          <attribute id="ClassEquipment" type="FixedString" value="EQP_CC_Merchant"/>
           <attribute id="Description" type="TranslatedString" handle="hacc12875g1bdeg46e6g851fgbf8b21412aa1" version="1"/>
           <attribute id="DisplayName" type="TranslatedString" handle="hf57e552ege4e1g4e99g8482ga824222982df" version="1"/>
           <attribute id="HpPerLevel" type="int32" value="5"/>
+          <attribute id="IsDefaultForUseSpellAction" type="bool" value="true"/>
           <attribute id="LearningStrategy" type="uint8" value="1"/>
           <attribute id="MulticlassSpellcasterModifier" type="double" value="0.5"/>
-          <attribute id="MustPrepareSpells" type="bool" value="False"/>
+          <attribute id="MustPrepareSpells" type="bool" value="true"/>
           <attribute id="Name" type="FixedString" value="Merchant"/>
           <attribute id="PrimaryAbility" type="uint8" value="6"/>
           <attribute id="ProgressionTableUUID" type="guid" value="98cafd28-0703-426b-9622-d6c4e128bef1"/>
           <attribute id="SoundClassType" type="FixedString" value="Paladin"/>
           <attribute id="SpellCastingAbility" type="uint8" value="6"/>
-          <attribute id="SpellList" type="guid" value="4ed41a6d-19fd-4ca8-940a-072314b71e43"/>
           <attribute id="UUID" type="guid" value="1abc8536-1de3-447a-b756-6054d17f5c12"/>
           <children>
             <node id="Tags">
@@ -41,7 +42,6 @@
           <attribute id="ShortName" type="TranslatedString" handle="hc0b2a797ga126g45d5g8cdfgc65425b5ff40" version="1"/>
           <attribute id="SoundClassType" type="FixedString" value="Paladin"/>
           <attribute id="SpellCastingAbility" type="uint8" value="6"/>
-          <attribute id="SpellList" type="guid" value="4ed41a6d-19fd-4ca8-940a-072314b71e43"/>
           <attribute id="UUID" type="guid" value="4a0989a5-5ac9-4f03-a4d7-a80cb46ba62d"/>
         </node>
         <!--Travelling Salesman class description-->
@@ -58,7 +58,6 @@
           <attribute id="ShortName" type="TranslatedString" handle="hc0b2a797ga126g45d5g8cdfgc65425b5ff40" version="1"/>
           <attribute id="SoundClassType" type="FixedString" value="Paladin"/>
           <attribute id="SpellCastingAbility" type="uint8" value="6"/>
-          <attribute id="SpellList" type="guid" value="4ed41a6d-19fd-4ca8-940a-072314b71e43"/>
           <attribute id="UUID" type="guid" value="33a3b1ba-4db4-4e29-b5b5-803294b1598d"/>
         </node>
       </children>

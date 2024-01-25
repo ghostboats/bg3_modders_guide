@@ -6,9 +6,11 @@
       <children>
         <!--Merchant Progressions-->
         <node id="Progression">
+          <attribute id="AllowImprovement" type="bool" value="false"/>
+          <attribute id="Boosts" type="LSString" value="ActionResource(SpellSlot,2,1)"/>
           <attribute id="Level" type="uint8" value="1"/>
           <attribute id="Name" type="LSString" value="Merchant"/>
-          <attribute id="PassivesAdded" type="LSString" value="KingOfCoin"/>
+          <attribute id="PassivesAdded" type="LSString" value="UnlockedSpellSlotLevel1;KingOfCoin"/>
           <attribute id="ProgressionType" type="uint8" value="0" />
           <attribute id="Selectors" type="LSString" value="SelectSkills(9507042a-ed85-4cf2-9574-8ac669be4a59,2);SelectAbilityBonus(c4806be9-2f6f-4aca-986a-9a7b0b367e46,AbilityBonus,2,1);AddSpells(ff29507c-1657-4329-a730-ae64ad73bde9,,Intelligence,,AlwaysPrepared)"/>
           <attribute id="TableUUID" type="guid" value="98cafd28-0703-426b-9622-d6c4e128bef1"/>
