@@ -1,0 +1,6 @@
+
+new entry "Shout_Hide"
+type "SpellData"
+data "SpellType" "Shout"
+using "Shout_Hide"
+data "SpellProperties" "ApplyStatus(SNEAKING,100,-1); AI_IGNORE:IF(TCP_AllowSummoningSpell()):ApplyStatus(TCP_BOOST_DRANKPOTION_APPLY,100,0)"
