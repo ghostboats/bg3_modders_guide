@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<save> 
+	<version major="4" minor="0" revision="6" build="5" />
+	<region id="Templates">
+		<node id="Templates">
+			<children>	
+				<node id="GameObjects">
+					<attribute id="CanShootThrough" type="bool" value="True" />
+					<attribute id="Description" type="TranslatedString" handle="h8906cc3dgc916g44ccg8973g0b329b67203b" version="1" />
+					<attribute id="DisplayName" type="TranslatedString" handle="h3f818017gb447g45d2ga1b5gb255b36c4556" version="1" />
+					<attribute id="EquipmentTypeID" type="guid" value="f85002a2-8e0e-4a49-0faa-2ef57d983a3a" />
+					<attribute id="Flag" type="int64" value="0" />
+					<attribute id="Icon" type="FixedString" value="Item_MAG_Giantslayer_Greatsword" />
+					<attribute id="IsInspector" type="bool" value="True" />
+					<attribute id="LevelName" type="FixedString" value="" />
+					<attribute id="LevelOverride" type="int64" value="-1" />
+					<attribute id="MapKey" type="FixedString" value="e877d728-e895-4aea-a8c3-0c4abea5e278" />
+					<attribute id="Name" type="LSString" value="DeathSwordGreatsword" />
+					<attribute id="ParentTemplateId" type="FixedString" value="2741505a-9d0b-4c9e-adcd-2e6339491e95" />
+					<attribute id="PhysicsTemplate" type="FixedString" value="1b42ed05-5c92-3c8f-fcdf-b203fdc45769" />
+					<attribute id="Race" type="int8" value="0" />
+					<attribute id="ReadinessFlags" type="uint32" value="144" />
+					<attribute id="Stats" type="FixedString" value="DeathSwordGreatsword" />
+					<attribute id="Tooltip" type="uint8" value="2" />
+					<attribute id="Type" type="FixedString" value="item" />
+					<attribute id="VisualTemplate" type="FixedString" value="441ea20b-53f4-005d-bdcb-6e195817d545" />
+					<attribute id="WalkThrough" type="bool" value="True" />
+					<attribute id="_OriginalFileVersion_" type="int64" value="144115188075855912" />
+					<children>
+						<node id="GameMaster" />
+						<node id="OnDestroyActions">
+							<children>
+								<node id="Action">
+									<attribute id="ActionType" type="int64" value="26" />
+									<children>
+										<node id="Attributes">
+											<attribute id="ActivateSoundEvent" type="FixedString" value="3ea82655-5140-4287-9ab8-794559f182d3" />
+											<attribute id="Animation" type="FixedString" value="" />
+											<attribute id="PlayOnHUD" type="bool" value="False" />
+										</node>
+									</children>
+								</node>
+							</children>
+						</node>
+					</children>
+				</node>
+				<node id="GameObjects">
+					<attribute id="Description" type="TranslatedString" handle="hfe150b1agf604g4953ga814g734f9e1d47ad" version="1" />
+					<attribute id="DisplayName" type="TranslatedString" handle="h3e5dbf1bg7a31g4699gad7egf8461631695d" version="1" />
+					<attribute id="Icon" type="FixedString" value="Item_LOOT_GEN_Backpack_A_Posed_A" />
+					<attribute id="InventoryType" type="uint8" value="11" />
+					<attribute id="LevelName" type="FixedString" value="" />
+					<attribute id="MapKey" type="FixedString" value="0619ee4f-25b4-45ef-9cec-8c963ed82d74" />
+					<attribute id="Name" type="LSString" value="DeathSword_Bag" />
+					<attribute id="ParentTemplateId" type="FixedString" value="ea8cc72a-e078-4ce7-bd63-14bcf1851f46" />
+					<attribute id="ReadinessFlags" type="uint32" value="128" />
+					<attribute id="Scale" type="float" value="0.5" />							
+					<attribute id="Stats" type="FixedString" value="DeathSword_Bag" /> 
+					<attribute id="Tooltip" type="uint8" value="2" />
+					<attribute id="TreasureOnDestroy" type="bool" value="True" />
+					<attribute id="Type" type="FixedString" value="item" />
+					<attribute id="WalkThrough" type="bool" value="True" />
+					<attribute id="_OriginalFileVersion_" type="int64" value="144115188075855912" />
+					<children>
+						<node id="GameMaster" />
+						<node id="InventoryList">
+							<children>
+								<node id="InventoryItem">
+									<attribute id="Object" type="FixedString" value="DeathSword_Bag_TT" />
+								</node>
+							</children>
+						</node>
+					</children>
+				</node>	
+			</children>
+		</node>
+	</region>
+</save>
+
