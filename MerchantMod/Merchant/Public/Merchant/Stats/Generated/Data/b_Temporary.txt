@@ -1,6 +1,0 @@
-
-new entry "Shout_Hide____"
-type "SpellData"
-data "SpellType" "Shout"
-using "Shout_Hide"
-data "SpellProperties" "IF(HasStatus('TCP_BOOST_DRANKPOTION') and HasStatus('SNEAKING')):RemoveStatus(TCP_BOOST_DRANKPOTION); AI_IGNORE:IF(Player() and not HasStatus('SNEAKING')):ApplyStatus(TCP_BOOST_DRANKPOTION,100,2); ApplyStatus(SNEAKING,100,-1)"
